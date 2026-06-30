@@ -116,7 +116,7 @@ const HostApp = (function () {
     location.reload();
   }
 
-  return { startGame, nextMission, restart };
+  return { init, startGame, nextMission, restart };
 })();
 
 document.addEventListener("DOMContentLoaded", () => HostApp.init());
