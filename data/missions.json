@@ -1,0 +1,276 @@
+{
+  "gameConfig": {
+    "title": "HR AI Tower",
+    "subtitle": "Construye una organización resiliente con SAP Business AI en SuccessFactors",
+    "scoringWeights": {
+      "value": 0.40,
+      "time": 0.25,
+      "risk": 0.35
+    },
+    "timeScoring": {
+      "maxSeconds": 60,
+      "maxPoints": 100,
+      "minPoints": 40
+    },
+    "icoStates": [
+      { "min": 0, "max": 40, "label": "Potencial Descubierto" },
+      { "min": 41, "max": 65, "label": "En Transición" },
+      { "min": 66, "max": 84, "label": "AI Ready" },
+      { "min": 85, "max": 100, "label": "AI First Enterprise" }
+    ]
+  },
+
+  "missions": [
+    {
+      "id": "ess",
+      "floorName": "Piso ESS",
+      "missionTitle": "Employee Self Service",
+      "brief": "Empleados preguntan por políticas de teletrabajo en varios idiomas y los tickets de soporte se acumulan.",
+      "tooltip": "Joule hereda roles y permisos nativos de SuccessFactors, reduciendo fricción y elevando adopción.",
+      "unexpectedEvent": {
+        "emoji": "👻",
+        "title": "¡Gremlins de la Información!",
+        "outcomeIfNative": "Joule reorganiza documentos automáticamente. Bonus +1 Integración.",
+        "outcomeIfOther": "Los Gremlins siguen generando caos. Sin bonus."
+      },
+      "options": [
+        {
+          "type": "native",
+          "label": "Joule (nativo SuccessFactors)",
+          "recommended": true,
+          "bullets": [
+            "Responde con contexto y permisos",
+            "Integrado nativamente a SuccessFactors",
+            "Traducción de contenido incluida"
+          ],
+          "value": 8,
+          "risk": 100,
+          "stability": 80,
+          "resources": { "integration": 2, "trust": 2 }
+        },
+        {
+          "type": "external",
+          "label": "Bot genérico externo",
+          "bullets": [
+            "Rápido de activar",
+            "Conocimiento parcial del contexto",
+            "Trazabilidad limitada"
+          ],
+          "value": 3,
+          "risk": 55,
+          "stability": 45,
+          "resources": { "productivity": 2 }
+        },
+        {
+          "type": "manual",
+          "label": "FAQ manual",
+          "bullets": [
+            "Control directo del contenido",
+            "Actualización más lenta",
+            "Carga operativa alta"
+          ],
+          "value": 1,
+          "risk": 25,
+          "stability": 20,
+          "resources": {}
+        }
+      ]
+    },
+    {
+      "id": "rec",
+      "floorName": "Piso Recruiting",
+      "missionTitle": "Recruiting",
+      "brief": "Tienen 600 CVs y una vacante crítica. ¿Cómo priorizan candidatos con equidad?",
+      "tooltip": "El matching nativo usa perfiles y skills del Talent Intelligence Hub. Preguntas consistentes elevan la equidad.",
+      "unexpectedEvent": {
+        "emoji": "🌪️",
+        "title": "Tornado de Currículos",
+        "outcomeIfNative": "Skill Matching canaliza los CVs relevantes automáticamente. Bonus +1 Estabilidad.",
+        "outcomeIfOther": "El tornado desordena los CVs. Sin bonus."
+      },
+      "options": [
+        {
+          "type": "native",
+          "label": "Skill Matching + JD Generator + Interview AI",
+          "recommended": true,
+          "bullets": [
+            "Matching con skills del TIH",
+            "Job descriptions consistentes y auditables",
+            "Preguntas comparables por competencia"
+          ],
+          "value": 7,
+          "risk": 100,
+          "stability": 80,
+          "resources": { "productivity": 3, "integration": 2 }
+        },
+        {
+          "type": "external",
+          "label": "IA externa genérica",
+          "bullets": [
+            "Filtro rápido",
+            "Datos fuera del ecosistema",
+            "Calidad variable"
+          ],
+          "value": 3,
+          "risk": 55,
+          "stability": 45,
+          "resources": { "productivity": 2 }
+        },
+        {
+          "type": "manual",
+          "label": "Revisión manual",
+          "bullets": [
+            "Control total del proceso",
+            "Tiempo alto de revisión",
+            "Riesgo de sesgos no intencionales"
+          ],
+          "value": 1,
+          "risk": 25,
+          "stability": 20,
+          "resources": {}
+        }
+      ]
+    },
+    {
+      "id": "onb",
+      "floorName": "Piso Onboarding",
+      "missionTitle": "Onboarding",
+      "brief": "Coordinar accesos, formación y mentorías para 12 personas en 3 ubicaciones distintas.",
+      "tooltip": "Los workflows nativos respetan roles y seguridad. La traducción integrada acelera la adopción global.",
+      "unexpectedEvent": {
+        "emoji": "🐉",
+        "title": "Dragón del Tiempo Perdido",
+        "outcomeIfNative": "Las automatizaciones reducen el tiempo. El dragón bosteza y desaparece. Bonus +1 Productividad.",
+        "outcomeIfOther": "El dragón consume horas sin automatización. Sin bonus."
+      },
+      "options": [
+        {
+          "type": "native",
+          "label": "Onboarding Automation + Content Translation",
+          "recommended": true,
+          "bullets": [
+            "Flujos con roles y seguridad nativa",
+            "Traducción integrada",
+            "Experiencia consistente entre ubicaciones"
+          ],
+          "value": 7,
+          "risk": 100,
+          "stability": 80,
+          "resources": { "integration": 3, "experience": 2, "governance": 1 }
+        },
+        {
+          "type": "external",
+          "label": "IA externa de flujos",
+          "bullets": [
+            "Configuración rápida",
+            "Fuera del ecosistema SuccessFactors",
+            "Costo de mantenimiento adicional"
+          ],
+          "value": 3,
+          "risk": 55,
+          "stability": 45,
+          "resources": { "productivity": 2 }
+        },
+        {
+          "type": "manual",
+          "label": "Coordinación manual",
+          "bullets": [
+            "Flexibilidad total",
+            "Carga operativa alta",
+            "Riesgo de omisiones"
+          ],
+          "value": 1,
+          "risk": 25,
+          "stability": 20,
+          "resources": {}
+        }
+      ]
+    },
+    {
+      "id": "per",
+      "floorName": "Piso Performance",
+      "missionTitle": "Performance",
+      "brief": "Alinear objetivos trimestrales y elevar la calidad del feedback en toda la organización.",
+      "tooltip": "Las metas conectadas alimentan Learning Recommendations. Los insights nutren Career Insights.",
+      "unexpectedEvent": {
+        "emoji": "👑",
+        "title": "Reina del Copy-Paste",
+        "outcomeIfNative": "AI Writing unifica tono y contenido. Bonus +1 Gobernanza.",
+        "outcomeIfOther": "Contenido inconsistente sin AI Writing. Sin bonus."
+      },
+      "options": [
+        {
+          "type": "native",
+          "label": "Goal Creation + Performance Insights + Bias Analyzer",
+          "recommended": true,
+          "bullets": [
+            "Metas conectadas con Learning",
+            "Insights accionables",
+            "Detección y reducción de sesgos"
+          ],
+          "value": 7,
+          "risk": 100,
+          "stability": 80,
+          "resources": { "trust": 2, "governance": 2, "experience": 1 }
+        },
+        {
+          "type": "external",
+          "label": "IA externa de evaluación",
+          "bullets": [
+            "Velocidad de implementación",
+            "Sin historial integrado",
+            "Esfuerzo de conciliación de datos"
+          ],
+          "value": 3,
+          "risk": 55,
+          "stability": 45,
+          "resources": { "productivity": 2 }
+        },
+        {
+          "type": "manual",
+          "label": "Plantillas manuales",
+          "bullets": [
+            "Plantillas conocidas por el equipo",
+            "Alta variabilidad de calidad",
+            "Tiempo alto de elaboración"
+          ],
+          "value": 1,
+          "risk": 25,
+          "stability": 20,
+          "resources": {}
+        }
+      ]
+    }
+  ],
+
+  "bossEvent": {
+    "name": "Lord Chaos",
+    "description": "Una montaña de Excels, emails sin responder y procesos fragmentados. ¡Transfórmalo con IA nativa!",
+    "steps": [
+      {
+        "label": "Unifica skills",
+        "tool": "Talent Intelligence Hub",
+        "effect": { "integration": 3, "governance": 2 },
+        "icoBonus": 8
+      },
+      {
+        "label": "Autoservicio inteligente",
+        "tool": "Joule / Joule Agents",
+        "effect": { "experience": 2, "productivity": 2 },
+        "icoBonus": 7
+      },
+      {
+        "label": "Equidad y control",
+        "tool": "Compensation + Compliance",
+        "effect": { "trust": 3, "governance": 2 },
+        "icoBonus": 8
+      },
+      {
+        "label": "Ciclo de talento",
+        "tool": "Performance → Learning → Career",
+        "effect": { "productivity": 3, "innovation": 2 },
+        "icoBonus": 7
+      }
+    ]
+  }
+}

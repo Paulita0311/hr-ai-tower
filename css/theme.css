@@ -1,0 +1,67 @@
+/* ============================================
+   HR AI TOWER - THEME / DESIGN TOKENS
+   Modifica AQUÍ todos los colores y estilos
+   ============================================ */
+
+:root {
+  /* --- Colores principales de marca --- */
+  --color-primary: #0070F2;
+  --color-primary-hover: #005FCC;
+  --color-primary-bg: #E6F1FB;
+
+  --color-dark-bg: #003366;
+  --color-accent-gold: #E8B84B;
+  --color-accent-gold-hover: #D4A532;
+
+  /* --- Tipos de decisión (nativo / externo / manual) --- */
+  --color-native: #0070F2;
+  --color-native-bg: #E6F1FB;
+  --color-native-border: #378ADD;
+
+  --color-external: #BA7517;
+  --color-external-bg: #FAEEDA;
+  --color-external-border: #BA7517;
+
+  --color-manual: #888780;
+  --color-manual-bg: #F0EFEA;
+  --color-manual-border: #B5B3A9;
+
+  /* --- Estados / feedback --- */
+  --color-success: #1D9E75;
+  --color-warning: #EF9F27;
+  --color-danger: #D32F2F;
+
+  /* --- Fondos neutros --- */
+  --color-background-primary: #FFFFFF;
+  --color-background-secondary: #F5F4F0;
+  --color-background-tertiary: #EDEBE4;
+
+  /* --- Texto --- */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B6960;
+  --color-text-tertiary: #9C9A90;
+
+  /* --- Bordes --- */
+  --color-border-tertiary: #E0DED5;
+  --color-border-secondary: #C8C6BB;
+
+  /* --- Tipografía --- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* --- Bordes redondeados --- */
+  --border-radius-md: 8px;
+  --border-radius-lg: 14px;
+
+  /* --- Estados del ICO (puedes cambiar estos colores por rango) --- */
+  --ico-potential: #9C9A90;
+  --ico-transition: #EF9F27;
+  --ico-ready: #1D9E75;
+  --ico-first: #E8B84B;
+}
+
+/* ============================================
+   Para cambiar la identidad visual completa,
+   solo necesitas tocar las variables de arriba.
+   El resto del CSS (game.css) las usa a través
+   de var(--nombre-variable).
+   ============================================ */

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR AI Tower - Host</title>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/game.css">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+</head>
+<body>
+
+<div class="host-wrap">
+
+  <!-- LOBBY: esperando jugadores -->
+  <div class="scr on" id="host-lobby">
+    <div class="host-title">HR AI Tower</div>
+    <div class="host-sub">Escanea el código o entra al link para unirte</div>
+
+    <div class="host-join-box">
+      <div id="qr-canvas-wrap"></div>
+      <div class="host-room-code">
+        <div class="hrc-lbl">Código de sala</div>
+        <div class="hrc-val" id="room-code-display">----</div>
+      </div>
+      <div class="host-link" id="host-link-display"></div>
+    </div>
+
+    <div class="host-players-lbl">Jugadores conectados (<span id="player-count">0</span>)</div>
+    <div class="host-players-grid" id="host-players-grid"></div>
+
+    <button class="btn-go" id="btn-start-game" onclick="HostApp.startGame()" disabled>
+      Iniciar juego (mínimo 1 jugador)
+    </button>
+  </div>
+
+  <!-- DURANTE EL JUEGO: muestra progreso de todos -->
+  <div class="scr" id="host-playing">
+    <div class="host-mission-bar">
+      <div class="host-mission-ttl" id="host-mission-ttl">Misión 1</div>
+      <div class="host-mission-timer" id="host-mission-timer">60s</div>
+    </div>
+    <div class="host-players-grid" id="host-progress-grid"></div>
+    <button class="btn-go" id="btn-next-mission" onclick="HostApp.nextMission()">
+      Siguiente misión →
+    </button>
+  </div>
+
+  <!-- LEADERBOARD FINAL -->
+  <div class="scr" id="host-results">
+    <div class="host-title">Resultados Finales</div>
+    <div class="leaderboard" id="leaderboard"></div>
+    <button class="btn-go" onclick="HostApp.restart()">Nueva partida</button>
+  </div>
+
+</div>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/multiplayer.js"></script>
+<script src="js/host-app.js"></script>
+</body>
+</html>

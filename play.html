@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR AI Tower - Jugar</title>
+<link rel="stylesheet" href="css/theme.css">
+<link rel="stylesheet" href="css/game.css">
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<div class="game-wrap" id="gw">
+
+  <!-- PASO 1: ingresar código de sala (si no viene en el link) -->
+  <div class="scr intro-bg on" id="scr-join">
+    <div class="game-title">HR AI Tower</div>
+    <div class="game-sub">Ingresa el código de la sala para unirte</div>
+    <input type="text" id="input-room-code" placeholder="CÓDIGO DE SALA" maxlength="5" class="input-field">
+    <button class="btn-go" onclick="PlayerApp.checkRoom()">Continuar</button>
+    <div id="join-error" class="error-msg"></div>
+  </div>
+
+  <!-- PASO 2: nombre y avatar -->
+  <div class="scr intro-bg" id="scr-intro">
+    <div class="game-title">HR AI Tower</div>
+    <div class="game-sub">Construye una organización resiliente con SAP Business AI</div>
+    <input type="text" id="input-player-name" placeholder="Tu nombre" maxlength="20" class="input-field">
+    <div class="av-grid" id="av-grid">
+      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'champion')"><span class="av-ico">🏆</span><div class="av-name">HR AI Champion</div></div>
+      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'explorer')"><span class="av-ico">🔭</span><div class="av-name">AI Explorer</div></div>
+      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'builder')"><span class="av-ico">🔧</span><div class="av-name">Transformation Builder</div></div>
+      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'architect')"><span class="av-ico">📐</span><div class="av-name">Innovation Architect</div></div>
+    </div>
+    <button class="btn-go" id="btn-go" onclick="PlayerApp.joinGame()" disabled>Unirme a la partida</button>
+  </div>
+
+  <!-- PASO 3: esperando que el host inicie -->
+  <div class="scr intro-bg" id="scr-waiting">
+    <div class="game-title">¡Listo!</div>
+    <div class="game-sub">Esperando a que el anfitrión inicie el juego...</div>
+    <div class="loader"></div>
+  </div>
+
+  <!-- PASTANALLA DE JUEGO (misiones) -->
+  <div class="scr" id="scr-game" style="flex-direction:column">
+    <div class="hud">
+      <div class="hud-ico">
+        <div class="ico-lbl">Índice de Confianza (ICO)</div>
+        <div class="ico-row">
+          <div class="ico-bar"><div class="ico-fill" id="ico-fill" style="width:0%"></div></div>
+          <span class="ico-num" id="ico-num">0</span>
+          <span class="ico-tag" id="ico-tag">Potencial</span>
+        </div>
+      </div>
+      <div class="res-row" id="res-row"></div>
+    </div>
+    <div class="panel-col" id="panel-col">
+      <div class="panel-hdr">
+        <div class="panel-ttl" id="pan-ttl"></div>
+        <div class="panel-sub" id="pan-sub"></div>
+      </div>
+      <div class="panel-body" id="pan-body"></div>
+    </div>
+  </div>
+
+  <!-- BOSS -->
+  <div class="scr boss-bg" id="scr-boss">
+    <div id="boss-main">
+      <div class="boss-mon">🌑👹🌑</div>
+      <div class="boss-ttl" id="boss-name">Lord Chaos</div>
+      <div class="boss-dsc" id="boss-desc"></div>
+      <div class="boss-grid" id="boss-grid"></div>
+    </div>
+  </div>
+
+  <!-- RESULTADOS PERSONALES -->
+  <div class="scr res-bg" id="scr-res">
+    <div class="res-ico" id="res-ico">0</div>
+    <div class="res-status" id="res-status"></div>
+    <div class="res-learn" id="res-learn"></div>
+    <div class="res-badges" id="res-badges"></div>
+  </div>
+
+  <div id="toast-area"></div>
+  <div id="ev-area"></div>
+
+</div>
+
+<script src="js/firebase-config.js"></script>
+<script src="js/multiplayer.js"></script>
+<script src="js/game-engine.js"></script>
+<script src="js/player-app.js"></script>
+</body>
+</html>
