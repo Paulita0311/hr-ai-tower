@@ -11,14 +11,12 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 </head>
 <body>
-
 <div class="host-wrap">
 
-  <!-- LOBBY: esperando jugadores -->
+  <!-- LOBBY -->
   <div class="scr on" id="host-lobby">
     <div class="host-title">HR AI Tower</div>
-    <div class="host-sub">Escanea el código o entra al link para unirte</div>
-
+    <div class="host-sub">Escanea el código QR o ingresa el link para unirte</div>
     <div class="host-join-box">
       <div id="qr-canvas-wrap"></div>
       <div class="host-room-code">
@@ -27,36 +25,50 @@
       </div>
       <div class="host-link" id="host-link-display"></div>
     </div>
-
     <div class="host-players-lbl">Jugadores conectados (<span id="player-count">0</span>)</div>
     <div class="host-players-grid" id="host-players-grid"></div>
-
     <button class="btn-go" id="btn-start-game" onclick="HostApp.startGame()" disabled>
-      Iniciar juego (mínimo 1 jugador)
+      ▶ Iniciar juego
     </button>
   </div>
 
-  <!-- DURANTE EL JUEGO: muestra progreso de todos -->
+  <!-- DURANTE EL JUEGO -->
   <div class="scr" id="host-playing">
-    <div class="host-mission-bar">
-      <div class="host-mission-ttl" id="host-mission-ttl">Misión 1</div>
-      <div class="host-mission-timer" id="host-mission-timer">60s</div>
+    <div class="host-game-layout">
+
+      <!-- Columna izquierda: situación actual -->
+      <div class="host-situation-col">
+        <div class="host-mission-ttl" id="host-mission-ttl">Misión 1</div>
+        <div class="host-situation-box">
+          <div class="host-sit-lbl">Situación</div>
+          <div class="host-sit-txt" id="host-situation"></div>
+        </div>
+        <div class="host-options-list" id="host-options"></div>
+      </div>
+
+      <!-- Columna derecha: progreso de jugadores -->
+      <div class="host-progress-col">
+        <div class="host-progress-ttl">Respuestas</div>
+        <div class="host-progress-count" id="host-progress-count">0 / 0 respondieron</div>
+        <div class="host-progress-list" id="host-progress-grid"></div>
+        <button class="btn-go" id="btn-next-mission" onclick="HostApp.nextMission()" style="margin-top:auto">
+          Siguiente misión →
+        </button>
+      </div>
+
     </div>
-    <div class="host-players-grid" id="host-progress-grid"></div>
-    <button class="btn-go" id="btn-next-mission" onclick="HostApp.nextMission()">
-      Siguiente misión →
-    </button>
   </div>
 
-  <!-- LEADERBOARD FINAL -->
+  <!-- RESULTADOS FINALES -->
   <div class="scr" id="host-results">
-    <div class="host-title">Resultados Finales</div>
+    <div class="host-title">🏆 Resultados Finales</div>
     <div class="leaderboard" id="leaderboard"></div>
-    <button class="btn-go" onclick="HostApp.restart()">Nueva partida</button>
+    <button class="btn-go" onclick="HostApp.restart()" style="margin-top:1rem">
+      Nueva partida
+    </button>
   </div>
 
 </div>
-
 <script src="js/firebase-config.js"></script>
 <script src="js/multiplayer.js"></script>
 <script src="js/host-app.js"></script>
