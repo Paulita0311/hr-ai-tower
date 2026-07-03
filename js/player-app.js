@@ -10,6 +10,8 @@
     let currentMissionIdx = 0;
     let hasAnsweredThisMission = false;
     let playerName = "";
+    let tutorialDismissed = false;
+    let pendingFirstMission = false;
 
     async function init() {
       gameData = await GameEngine.loadData();
@@ -107,8 +109,14 @@
           }
 
           if (!hasAnsweredThisMission) {
-            goScreen("scr-game");
-            renderMission(currentMissionIdx);
+            // Show tutorial before the very first mission
+            if (!tutorialDismissed && currentMissionIdx === 0) {
+              pendingFirstMission = true;
+              goScreen("scr-tutorial");
+            } else {
+              goScreen("scr-game");
+              renderMission(currentMissionIdx);
+            }
           }
 
         } else if (room.status === "results") {
@@ -116,6 +124,13 @@
           renderResults();
         }
       });
+    }
+
+    function dismissTutorial() {
+      tutorialDismissed = true;
+      pendingFirstMission = false;
+      goScreen("scr-game");
+      renderMission(currentMissionIdx);
     }
 
     function renderMission(idx) {
@@ -134,16 +149,10 @@
 
       m.options.forEach((opt, oi) => {
         const letters = ["A","B","C"];
-        const bcls = opt.type === "native" ? "b-native" : opt.type === "external" ? "b-external" : "b-manual";
-        const label = opt.type === "native" ? "NATIVO" : opt.type === "external" ? "EXTERNO" : "MANUAL";
         const bullets = opt.bullets.map((b) => `<li>${b}</li>`).join("");
         h += `<div class="dc" id="dc${oi}" onclick="PlayerApp.selectCard(${oi})">
-          <span class="opt-letter type-${opt.type}">${letters[oi]}</span>
+          <span class="opt-letter">${letters[oi]}</span>
           <div class="dc-body">
-            <div class="dc-hdr">
-              <span class="badge ${bcls}">${label}</span>
-              ${opt.recommended ? '<span class="badge b-rec">✦ Recomendado</span>' : ""}
-            </div>
             <div class="dc-ttl">${opt.label}</div>
             <ul class="dc-ul">${bullets}</ul>
           </div>
@@ -164,12 +173,9 @@
 
     function selectCard(idx) {
       if (hasAnsweredThisMission) return;
-      document.querySelectorAll(".dc").forEach((el) => el.classList.remove("sel", "external", "manual"));
+      document.querySelectorAll(".dc").forEach((el) => el.classList.remove("sel"));
       const el = document.getElementById(`dc${idx}`);
-      const opt = gameData.missions[currentMissionIdx].options[idx];
       el.classList.add("sel");
-      if (opt.type === "external") el.classList.add("external");
-      if (opt.type === "manual") el.classList.add("manual");
       selectedCardIdx = idx;
       document.getElementById("btn-conf").disabled = false;
     }
@@ -235,7 +241,7 @@
       d.className = "toast";
       d.textContent = msg;
       a.appendChild(d);
-      setTimeout(() => d.remove(), 4500);
+      setTimeout(() => d.remove(), 8000);
     }
 
     function showEvent(mission, isNative) {
@@ -249,8 +255,8 @@
                        <div class="ev-ttl">${ev.title}</div>
                        <div class="ev-dsc">${isNative ? ev.outcomeIfNative : ev.outcomeIfOther}</div>`;
         a.appendChild(d);
-        setTimeout(() => d.remove(), 6000);
-      }, 1000);
+        setTimeout(() => d.remove(), 10000);
+      }, 1200);
     }
 
     function renderResults() {
@@ -294,7 +300,7 @@
       document.getElementById(id).classList.add("on");
     }
 
-    return { init, checkRoom, joinGame, selectCard, confirm };
+    return { init, checkRoom, joinGame, selectCard, confirm, dismissTutorial };
   })();
 
   document.addEventListener("DOMContentLoaded", () => PlayerApp.init());
