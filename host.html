@@ -28,17 +28,48 @@
     <div class="host-players-lbl">Jugadores conectados (<span id="player-count">0</span>)</div>
     <div class="host-players-grid" id="host-players-grid"></div>
     <button class="btn-go" id="btn-start-game" onclick="HostApp.startGame()" disabled>
-      ▶ Iniciar juego
+      Iniciar juego
     </button>
   </div>
 
   <!-- DURANTE EL JUEGO -->
-  <div class="scr" id="host-playing">
+  <div class="scr" id="host-playing" style="flex-direction:column">
+
+    <header class="gh-header">
+      <div class="gh-brand">
+        <span class="gh-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v3"/>
+            <path d="M12 5l5 2v2H7V7l5-2z"/>
+            <rect x="8" y="9" width="8" height="10" rx="1"/>
+            <path d="M8 13h8M8 16h8"/>
+            <path d="M6 19h12"/>
+          </svg>
+        </span>
+        <div class="gh-brand-txt">
+          <div class="gh-title">HR AI TOWER</div>
+          <div class="gh-subtitle">Powered by <span class="gh-sap">SAP SuccessFactors</span></div>
+        </div>
+      </div>
+
+      <div class="gh-round">
+        <div class="gh-round-lbl" id="gh-round-lbl">RONDA 1/1</div>
+        <div class="gh-round-dots" id="gh-round-dots"></div>
+      </div>
+
+      <div class="gh-actions">
+        <div class="gh-status"><span class="gh-status-dot"></span>HOST <span class="gh-status-sub">&middot; Control manual</span></div>
+        <button class="gh-btn-next" id="btn-next-mission" onclick="HostApp.nextMission()">
+          Siguiente <span class="gh-arrow">&rarr;</span>
+        </button>
+      </div>
+    </header>
+
     <div class="host-game-layout">
 
       <!-- Columna izquierda: situación actual -->
       <div class="host-situation-col">
-        <div class="host-mission-ttl" id="host-mission-ttl">Misión 1</div>
+        <div class="cat-tag" id="host-cat-tag">Piso 1</div>
         <div class="host-situation-box">
           <div class="host-sit-lbl">Situación</div>
           <div class="host-sit-txt" id="host-situation"></div>
@@ -46,24 +77,66 @@
         <div class="host-options-list" id="host-options"></div>
       </div>
 
-      <!-- Columna derecha: progreso de jugadores -->
-      <div class="host-progress-col">
-        <div class="host-progress-ttl">Respuestas</div>
-        <div class="host-progress-count" id="host-progress-count">0 / 0 respondieron</div>
-        <div class="host-progress-list" id="host-progress-grid"></div>
-        <button class="btn-go" id="btn-next-mission" onclick="HostApp.nextMission()" style="margin-top:auto">
-          Siguiente misión →
-        </button>
+      <!-- Columna central: torre colectiva -->
+      <div class="host-tower-col" id="host-tower-col">
+        <div class="tower-ico-display">
+          <div class="tower-ico-lbl">Torre colectiva</div>
+          <div class="tower-ico-num" id="host-tower-count">0/0</div>
+        </div>
+        <div class="tower-scene">
+          <div class="tower-flag"></div>
+          <div class="tower-stack-wrap">
+            <div class="tower-stack" id="host-tower-stack"></div>
+          </div>
+          <div class="tower-base"></div>
+        </div>
+      </div>
+
+      <!-- Columna derecha: leaderboard + solidez -->
+      <div class="host-side-col">
+        <div class="side-card">
+          <div class="side-card-ttl">Leaderboard</div>
+          <div class="lb-tabs">
+            <div class="lb-tab active" id="lb-tab-ico" onclick="HostApp.setLeaderboardMode('ico')">Por ICO</div>
+            <div class="lb-tab" id="lb-tab-stab" onclick="HostApp.setLeaderboardMode('stability')">Por Solidez</div>
+          </div>
+          <div class="leaderboard" id="host-live-leaderboard"></div>
+        </div>
+
+        <div class="side-card">
+          <div class="side-card-ttl">Solidez de la torre</div>
+          <div class="solidez-head">
+            <div class="solidez-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 3l7 3v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/>
+                <path d="M9 12l2 2 4-4"/>
+              </svg>
+            </div>
+            <div>
+              <div class="solidez-pct" id="solidez-pct">0%</div>
+              <div class="solidez-label" id="solidez-label">Sin datos</div>
+            </div>
+          </div>
+          <div class="solidez-bar"><div class="solidez-fill" id="solidez-fill" style="width:0%"></div></div>
+          <div class="solidez-hint" id="solidez-hint">Responde correctamente para fortalecer la torre.</div>
+        </div>
       </div>
 
     </div>
+
+    <footer class="gh-footer">
+      <div class="gh-footer-chip"><span class="gh-dot-pulse"></span>Jugadores conectados <strong id="gh-conn-count">0</strong></div>
+      <div class="gh-footer-status" id="gh-footer-status">Esperando respuestas de los jugadores&hellip;</div>
+    </footer>
+
   </div>
 
   <!-- RESULTADOS FINALES -->
   <div class="scr" id="host-results">
-    <div class="host-title">🏆 Resultados Finales</div>
-    <div class="leaderboard" id="leaderboard"></div>
-    <button class="btn-go" onclick="HostApp.restart()" style="margin-top:1rem">
+    <div class="host-title">Resultados Finales</div>
+    <div class="host-sub">Ranking por Índice de Confianza (ICO)</div>
+    <div class="leaderboard" id="leaderboard" style="margin-top:1rem"></div>
+    <button class="btn-go" onclick="HostApp.restart()" style="margin-top:1.5rem">
       Nueva partida
     </button>
   </div>

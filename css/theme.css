@@ -4,56 +4,59 @@
    ============================================ */
 
 :root {
+  /* --- Fondo del juego (navy oscuro premium) --- */
+  --color-dark-bg: #0A1628;
+  --color-dark-bg-alt: #0E1D33;
+  --color-background-primary: #111D35;
+  --color-background-secondary: #16233F;
+  --color-background-tertiary: #0A1628;
+
   /* --- Colores principales de marca --- */
   --color-primary: #0070F2;
-  --color-primary-hover: #005FCC;
-  --color-primary-bg: #E6F1FB;
+  --color-primary-hover: #2E8CFF;
+  --color-primary-bg: rgba(0, 112, 242, 0.16);
 
-  --color-dark-bg: #003366;
   --color-accent-gold: #E8B84B;
   --color-accent-gold-hover: #D4A532;
 
   /* --- Tipos de decisión (nativo / externo / manual) --- */
   --color-native: #0070F2;
-  --color-native-bg: #E6F1FB;
-  --color-native-border: #378ADD;
+  --color-native-bg: rgba(0, 112, 242, 0.16);
+  --color-native-border: #2E8CFF;
 
-  --color-external: #BA7517;
-  --color-external-bg: #FAEEDA;
-  --color-external-border: #BA7517;
+  --color-external: #7C4DFF;
+  --color-external-bg: rgba(124, 77, 255, 0.16);
+  --color-external-border: #9B75FF;
 
-  --color-manual: #888780;
-  --color-manual-bg: #F0EFEA;
-  --color-manual-border: #B5B3A9;
+  --color-manual: #8891A6;
+  --color-manual-bg: rgba(136, 145, 166, 0.16);
+  --color-manual-border: #A3ABBD;
 
   /* --- Estados / feedback --- */
   --color-success: #1D9E75;
+  --color-success-bg: rgba(29, 158, 117, 0.16);
   --color-warning: #EF9F27;
-  --color-danger: #D32F2F;
+  --color-danger: #E5484D;
 
-  /* --- Fondos neutros --- */
-  --color-background-primary: #FFFFFF;
-  --color-background-secondary: #F5F4F0;
-  --color-background-tertiary: #EDEBE4;
-
-  /* --- Texto --- */
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #6B6960;
-  --color-text-tertiary: #9C9A90;
+  /* --- Texto (sobre fondo oscuro) --- */
+  --color-text-primary: #F4F6FB;
+  --color-text-secondary: rgba(244, 246, 251, 0.66);
+  --color-text-tertiary: rgba(244, 246, 251, 0.42);
 
   /* --- Bordes --- */
-  --color-border-tertiary: #E0DED5;
-  --color-border-secondary: #C8C6BB;
+  --color-border-tertiary: rgba(255, 255, 255, 0.10);
+  --color-border-secondary: rgba(255, 255, 255, 0.16);
 
   /* --- Tipografía --- */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* --- Bordes redondeados --- */
-  --border-radius-md: 8px;
-  --border-radius-lg: 14px;
+  --border-radius-md: 10px;
+  --border-radius-lg: 18px;
+  --border-radius-full: 999px;
 
-  /* --- Estados del ICO (puedes cambiar estos colores por rango) --- */
-  --ico-potential: #9C9A90;
+  /* --- Estados del ICO --- */
+  --ico-potential: #8891A6;
   --ico-transition: #EF9F27;
   --ico-ready: #1D9E75;
   --ico-first: #E8B84B;

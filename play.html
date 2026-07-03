@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/game.css">
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
 </head>
 <body>
 
@@ -22,53 +23,99 @@
     <div id="join-error" class="error-msg"></div>
   </div>
 
-  <!-- PASO 2: nombre y avatar -->
+  <!-- PASO 2: nombre -->
   <div class="scr intro-bg" id="scr-intro">
     <div class="game-title">HR AI Tower</div>
     <div class="game-sub">Construye una organización resiliente con SAP Business AI</div>
     <input type="text" id="input-player-name" placeholder="Tu nombre" maxlength="20" class="input-field">
-    <div class="av-grid" id="av-grid">
-      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'champion')"><span class="av-ico">🏆</span><div class="av-name">HR AI Champion</div></div>
-      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'explorer')"><span class="av-ico">🔭</span><div class="av-name">AI Explorer</div></div>
-      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'builder')"><span class="av-ico">🔧</span><div class="av-name">Transformation Builder</div></div>
-      <div class="av-card" onclick="PlayerApp.selectAvatar(this,'architect')"><span class="av-ico">📐</span><div class="av-name">Innovation Architect</div></div>
-    </div>
     <button class="btn-go" id="btn-go" onclick="PlayerApp.joinGame()" disabled>Unirme a la partida</button>
   </div>
 
   <!-- PASO 3: esperando que el host inicie -->
   <div class="scr intro-bg" id="scr-waiting">
-    <div class="game-title">¡Listo!</div>
-    <div class="game-sub">Esperando a que el anfitrión inicie el juego...</div>
+    <div class="game-title">&iexcl;Listo!</div>
+    <div class="game-sub">Esperando a que el anfitrión inicie el juego&hellip;</div>
     <div class="loader"></div>
   </div>
 
-  <!-- PASTANALLA DE JUEGO (misiones) -->
+  <!-- PANTALLA DE JUEGO (misiones) -->
   <div class="scr" id="scr-game" style="flex-direction:column">
-    <div class="hud">
-      <div class="hud-ico">
-        <div class="ico-lbl">Índice de Confianza (ICO)</div>
-        <div class="ico-row">
-          <div class="ico-bar"><div class="ico-fill" id="ico-fill" style="width:0%"></div></div>
-          <span class="ico-num" id="ico-num">0</span>
-          <span class="ico-tag" id="ico-tag">Potencial</span>
+
+    <header class="gh-header">
+      <div class="gh-brand">
+        <span class="gh-logo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v3"/>
+            <path d="M12 5l5 2v2H7V7l5-2z"/>
+            <rect x="8" y="9" width="8" height="10" rx="1"/>
+            <path d="M8 13h8M8 16h8"/>
+            <path d="M6 19h12"/>
+          </svg>
+        </span>
+        <div class="gh-brand-txt">
+          <div class="gh-title">HR AI TOWER</div>
+          <div class="gh-subtitle">Powered by <span class="gh-sap">SAP SuccessFactors</span></div>
         </div>
       </div>
-      <div class="res-row" id="res-row"></div>
-    </div>
-    <div class="panel-col" id="panel-col">
-      <div class="panel-hdr">
-        <div class="panel-ttl" id="pan-ttl"></div>
-        <div class="panel-sub" id="pan-sub"></div>
+
+      <div class="gh-round">
+        <div class="gh-round-lbl" id="gh-round-lbl">RONDA 1/1</div>
+        <div class="gh-round-dots" id="gh-round-dots"></div>
       </div>
-      <div class="panel-body" id="pan-body"></div>
+
+      <div class="gh-actions">
+        <div class="gh-status">
+          <span class="avatar-circle" id="gh-player-avatar">J</span>
+          <span id="gh-player-name">Jugador</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="tg-layout" id="tg-layout">
+
+      <div class="tg-tower-col" id="tg-tower-col">
+        <div class="tower-ico-display">
+          <div class="tower-ico-lbl">ICO</div>
+          <div class="tower-ico-num" id="tower-ico-num">0</div>
+        </div>
+        <canvas id="tower-canvas"></canvas>
+      </div>
+
+      <div class="tg-content-col">
+        <div class="hud">
+          <div class="hud-ico">
+            <div class="ico-lbl">Índice de Confianza (ICO)</div>
+            <div class="ico-row">
+              <div class="ico-bar"><div class="ico-fill" id="ico-fill" style="width:0%"></div></div>
+              <span class="ico-num" id="ico-num">0</span>
+              <span class="ico-tag" id="ico-tag">Potencial</span>
+            </div>
+          </div>
+          <div class="res-row" id="res-row"></div>
+        </div>
+
+        <div class="panel-col" id="panel-col">
+          <div class="panel-hdr">
+            <div class="panel-ttl" id="pan-ttl"></div>
+            <div class="panel-sub" id="pan-sub"></div>
+          </div>
+          <div class="panel-body" id="pan-body"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <!-- BOSS -->
   <div class="scr boss-bg" id="scr-boss">
     <div id="boss-main">
-      <div class="boss-mon">🌑👹🌑</div>
+      <div class="boss-mon">
+        <svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="8" cy="9" r="5"/>
+          <circle cx="16" cy="9" r="5"/>
+          <circle cx="12" cy="15" r="5"/>
+        </svg>
+      </div>
       <div class="boss-ttl" id="boss-name">Lord Chaos</div>
       <div class="boss-dsc" id="boss-desc"></div>
       <div class="boss-grid" id="boss-grid"></div>
@@ -91,6 +138,7 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/multiplayer.js"></script>
 <script src="js/game-engine.js"></script>
+<script src="js/tower-renderer.js"></script>
 <script src="js/player-app.js"></script>
 </body>
 </html>
