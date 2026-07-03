@@ -38,6 +38,77 @@
     <div class="loader"></div>
   </div>
 
+  <!-- PASO 4: pantalla de contexto antes del juego -->
+  <div class="scr" id="scr-tutorial" style="flex-direction:column">
+    <div class="tut-wrap">
+      <div class="tut-header">
+        <div class="tut-title">Antes de empezar</div>
+        <div class="tut-subtitle">Eres el líder de RR.HH. de una organización en transformación. En cada piso de la torre enfrentarás una situación real y elegirás cómo resolverla: con herramientas nativas de SAP SuccessFactors, con soluciones externas o de forma manual.</div>
+      </div>
+
+      <div class="tut-section">
+        <div class="tut-section-title">Tu puntuación</div>
+        <div class="tut-cards">
+
+          <div class="tut-card">
+            <div class="tut-card-icon">
+              <div class="tut-ico-bar"><div class="tut-ico-fill"></div></div>
+            </div>
+            <div class="tut-card-body">
+              <div class="tut-card-ttl">Índice de Confianza Organizacional (ICO)</div>
+              <div class="tut-card-desc">Tu puntuación principal. Mide el impacto acumulado de tus decisiones. Combina tres factores: el <strong>valor</strong> de la decisión, la <strong>agilidad</strong> con la que respondes y el nivel de <strong>trazabilidad y gobernanza</strong> de la solución elegida.</div>
+            </div>
+          </div>
+
+          <div class="tut-card">
+            <div class="tut-card-icon">
+              <div class="tut-res-chips">
+                <span class="tut-chip">PR</span>
+                <span class="tut-chip">IG</span>
+                <span class="tut-chip">GO</span>
+              </div>
+            </div>
+            <div class="tut-card-body">
+              <div class="tut-card-ttl">Recursos organizacionales</div>
+              <div class="tut-card-desc">Cada decisión modifica tus recursos. Son 6:<br>
+                <strong>PR</strong> Productividad &nbsp; <strong>IN</strong> Innovación &nbsp; <strong>TR</strong> Confianza<br>
+                <strong>IG</strong> Integración &nbsp; <strong>EX</strong> Experiencia &nbsp; <strong>GO</strong> Gobernanza</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="tut-section">
+        <div class="tut-section-title">Cómo funciona</div>
+        <div class="tut-cards">
+
+          <div class="tut-card">
+            <div class="tut-card-icon"><span class="tut-num">8</span></div>
+            <div class="tut-card-body">
+              <div class="tut-card-ttl">8 pisos, una decisión por piso</div>
+              <div class="tut-card-desc">Cada piso es un proceso de RR.HH. con un problema concreto. Lee la situación, evalúa las tres opciones y confirma tu elección.</div>
+            </div>
+          </div>
+
+          <div class="tut-card">
+            <div class="tut-card-icon"><span class="tut-num">!</span></div>
+            <div class="tut-card-body">
+              <div class="tut-card-ttl">Eventos inesperados</div>
+              <div class="tut-card-desc">Después de cada decisión puede aparecer un evento sorpresa que pondrá a prueba tu elección. El resultado depende de lo que hayas elegido.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="tut-footer">
+        <div class="tut-hint">No hay respuestas incorrectas, pero sí consecuencias distintas.</div>
+        <button class="btn-go tut-btn" onclick="PlayerApp.dismissTutorial()">Entendido, empezar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- PANTALLA DE JUEGO (misiones) -->
   <div class="scr" id="scr-game" style="flex-direction:column">
 
