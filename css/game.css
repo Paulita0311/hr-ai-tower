@@ -93,6 +93,20 @@
    .gh-btn-next:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
    .gh-btn-next .gh-arrow { font-size: 15px; }
 
+   .gh-timer-actions { display: flex; align-items: center; gap: 10px; }
+   .gh-btn-pause {
+     background: rgba(255,255,255,0.06);
+     color: #fff;
+     border: 1px solid var(--color-border-secondary);
+     padding: 12px 18px;
+     border-radius: var(--border-radius-md);
+     font-size: 13px; font-weight: 800; letter-spacing: 0.03em;
+     cursor: pointer;
+     font-family: var(--font-sans);
+     transition: all 0.15s;
+   }
+   .gh-btn-pause:hover { background: rgba(255,255,255,0.12); }
+
    /* ============================================
       FOOTER (compartido host + player)
       ============================================ */
@@ -321,7 +335,7 @@
    .join-tower-flagpole { width: 2px; height: 26px; background: rgba(255,255,255,0.5); position: relative; }
    .join-tower-flag { position: absolute; top: 0; left: 2px; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 16px solid #0070F2; }
 
-   .join-tower-floors { display: flex; flex-direction: column-reverse; width: 100%; gap: 4px; }
+   .join-tower-floors { display: flex; flex-direction: column; width: 100%; gap: 4px; }
    .join-tower-floor {
      height: 34px; border-radius: 8px;
      display: flex; align-items: center; justify-content: center;
@@ -381,6 +395,17 @@
      background: linear-gradient(135deg, #2E8CFF, #0070F2);
      flex-shrink: 0;
    }
+
+   /* ============================================
+      TEMPORIZADOR DE MISIÓN (jugador)
+      ============================================ */
+   .mission-timer { width: 100%; flex-shrink: 0; }
+   .timer-bar-track { width: 100%; height: 6px; background: rgba(255,255,255,0.08); overflow: hidden; }
+   .timer-bar-fill { height: 100%; width: 100%; background: #1D9E75; transition: width 1s linear, background-color 0.6s ease; }
+   .timer-seconds-row { display: flex; justify-content: flex-end; padding: 3px 14px 0; }
+   .timer-seconds { font-size: 11px; font-weight: 800; color: #1D9E75; transition: color 0.6s ease; }
+
+   .toast.toast-timeout { border-color: #D32F2F; color: #fff; background: rgba(211,47,47,0.16); font-weight: 700; animation: fadeToast 2s forwards; }
 
    /* ============================================
       HUD (barra ICO superior del jugador)
@@ -596,6 +621,98 @@
    .ev-ttl { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 4px; }
    .ev-dsc { font-size: 11px; color: var(--color-text-secondary); line-height: 1.55; }
 
+   /* ============================================
+      COMODÍN JOULE (pistas contextuales)
+      ============================================ */
+   .joule-widget { position: fixed; bottom: 24px; right: 24px; z-index: 60; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+
+   .joule-uses { display: flex; gap: 5px; height: 10px; }
+   .joule-use-dot { width: 9px; height: 9px; background: linear-gradient(135deg, #6B21E8, #9B59B6); transform: rotate(45deg); border-radius: 2px; box-shadow: 0 0 6px rgba(155,89,182,0.6); transition: opacity 0.2s; }
+   .joule-use-dot.spent { opacity: 0; }
+
+   .joule-btn {
+     position: relative;
+     width: 64px; height: 64px;
+     border-radius: 16px;
+     border: none;
+     background: linear-gradient(160deg, #1C1033, #120A22);
+     box-shadow: 0 4px 20px rgba(107,33,232,0.5);
+     display: flex; flex-direction: column; align-items: center; justify-content: center;
+     cursor: pointer;
+     transition: opacity 0.25s, box-shadow 0.25s, background 0.25s;
+   }
+   .joule-btn:hover:not(:disabled) { box-shadow: 0 6px 26px rgba(107,33,232,0.7); }
+   .joule-btn:disabled { cursor: not-allowed; }
+
+   .joule-btn.cooldown { opacity: 0.5; }
+
+   .joule-btn.exhausted { background: var(--color-background-secondary); box-shadow: none; }
+   .joule-btn.exhausted .joule-diamond { filter: grayscale(1); opacity: 0.45; }
+   .joule-btn.exhausted .joule-label { font-size: 8px; color: var(--color-text-tertiary); line-height: 1.15; text-align: center; padding: 0 3px; }
+
+   .joule-btn.ready-pulse { animation: joulePulse 0.9s ease; }
+   @keyframes joulePulse {
+     0% { box-shadow: 0 4px 20px rgba(107,33,232,0.5); }
+     50% { box-shadow: 0 4px 32px rgba(155,89,182,0.95); }
+     100% { box-shadow: 0 4px 20px rgba(107,33,232,0.5); }
+   }
+
+   .joule-ring { position: absolute; inset: 0; width: 64px; height: 64px; pointer-events: none; transform: rotate(-90deg); opacity: 0; transition: opacity 0.2s; }
+   .joule-btn.cooldown .joule-ring { opacity: 1; }
+   .joule-ring-bg { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 3; }
+   .joule-ring-fill { fill: none; stroke: #9B59B6; stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+
+   .joule-diamond { width: 34px; height: 34px; margin-top: 3px; }
+   .joule-sparkle { animation: joulesparkleTwinkle 1.8s ease-in-out infinite; }
+   .joule-sparkle:nth-child(4) { animation-delay: 0.3s; }
+   .joule-sparkle:nth-child(5) { animation-delay: 0.9s; }
+   .joule-sparkle:nth-child(6) { animation-delay: 0.6s; }
+   @keyframes joulesparkleTwinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+   .joule-label { font-size: 10px; font-weight: 700; color: #fff; margin-top: 2px; letter-spacing: 0.02em; }
+
+   .joule-bubble {
+     position: absolute; bottom: 76px; right: 0;
+     width: 240px;
+     background: #2D1B69;
+     border: 1.5px solid #6B21E8;
+     border-radius: 12px;
+     padding: 14px;
+     color: #fff;
+     font-size: 13px;
+     line-height: 1.55;
+     box-shadow: 0 14px 34px rgba(0,0,0,0.45);
+     opacity: 0;
+     transform: translateY(10px) scale(0.92);
+     pointer-events: none;
+     transition: opacity 0.3s ease, transform 0.3s ease;
+   }
+   .joule-bubble::after {
+     content: "";
+     position: absolute; bottom: -8px; right: 26px;
+     width: 15px; height: 15px;
+     background: #2D1B69;
+     border-right: 1.5px solid #6B21E8;
+     border-bottom: 1.5px solid #6B21E8;
+     transform: rotate(45deg);
+   }
+   .joule-bubble.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+   .joule-fly {
+     position: fixed;
+     width: 34px; height: 34px;
+     margin: -17px 0 0 -17px;
+     z-index: 70;
+     pointer-events: none;
+     opacity: 1;
+     transition: transform 0.4s cubic-bezier(.22,1,.36,1), opacity 0.4s ease;
+   }
+
+   @media (max-width: 480px) {
+     .joule-widget { bottom: 16px; right: 16px; }
+     .joule-bubble { width: 200px; }
+   }
+
    /* ---------- Pantalla de espera ---------- */
    #scr-waiting { background: var(--color-dark-bg); color: #fff; align-items: center; justify-content: center; gap: 1.5rem; text-align: center; }
 
@@ -621,9 +738,62 @@
    .host-link { font-size: 11px; color: var(--color-text-tertiary); word-break: break-all; text-align: center; }
    .host-players-lbl { font-size: 13px; font-weight: 700; color: var(--color-text-secondary); }
    .host-players-grid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; max-width: 600px; }
-   .host-player-chip { display: flex; align-items: center; gap: 7px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); padding: 7px 14px 7px 7px; border-radius: 99px; font-size: 13px; font-weight: 600; }
+   .host-player-chip { display: flex; align-items: center; gap: 9px; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); padding: 7px 16px 7px 7px; border-radius: 16px; font-size: 13px; font-weight: 600; text-align: left; }
+   .host-chip-body { display: flex; flex-direction: column; line-height: 1.3; }
+   .host-chip-name { color: var(--color-text-primary); }
+   .host-chip-company { font-size: 10px; font-weight: 600; color: var(--color-text-tertiary); }
 
    #host-lobby { align-items: center; justify-content: center; gap: 1.25rem; padding: 2rem; text-align: center; background: var(--color-dark-bg); }
+
+   /* ---------- Resumen de misiones seleccionadas (lobby host + espera jugador) ---------- */
+   .selected-missions-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; max-width: 520px; }
+   .selected-missions-lbl { font-size: 12px; font-weight: 700; color: var(--color-text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+   .selected-missions-list { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+   .selected-mission-chip { font-size: 11px; font-weight: 700; color: var(--color-primary-hover); background: var(--color-primary-bg); border: 1px solid rgba(46,140,255,0.3); padding: 4px 11px; border-radius: 999px; }
+
+   /* ---------- Toggle de sonido (lobby host) ---------- */
+   .sound-toggle { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--color-text-secondary); }
+   .sound-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+   .sound-toggle-track { width: 38px; height: 22px; background: rgba(255,255,255,0.14); border-radius: 999px; position: relative; transition: background 0.2s; flex-shrink: 0; }
+   .sound-toggle-thumb { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; background: #fff; border-radius: 50%; transition: transform 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+   .sound-toggle input:checked ~ .sound-toggle-track { background: var(--color-primary); }
+   .sound-toggle input:checked ~ .sound-toggle-track .sound-toggle-thumb { transform: translateX(16px); }
+
+   /* ============================================
+      HOST: Configuración de partida
+      ============================================ */
+   #host-config { align-items: center; padding: 2.5rem 2rem; background: var(--color-dark-bg); overflow-y: auto; }
+   .cfg-wrap { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; max-width: 900px; width: 100%; }
+   .cfg-wrap .host-title, .cfg-wrap .host-sub { text-align: center; }
+
+   .cfg-presets { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+   .cfg-preset-btn {
+     display: flex; flex-direction: column; align-items: center; gap: 3px;
+     background: var(--color-background-primary); border: 1.5px solid var(--color-border-tertiary);
+     color: #fff; padding: 10px 20px; border-radius: var(--border-radius-md);
+     font-size: 13px; font-weight: 700; cursor: pointer; font-family: var(--font-sans);
+     transition: all 0.15s;
+   }
+   .cfg-preset-btn:hover { border-color: var(--color-primary-hover); transform: translateY(-1px); }
+   .cfg-preset-count { font-size: 11px; font-weight: 600; color: var(--color-text-tertiary); }
+
+   .cfg-mission-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; width: 100%; }
+   .cfg-mission-card {
+     background: var(--color-background-secondary); border: 1.5px solid var(--color-border-tertiary);
+     border-radius: var(--border-radius-md); padding: 12px 14px; cursor: pointer;
+     transition: all 0.15s; text-align: left;
+   }
+   .cfg-mission-card:hover { border-color: var(--color-border-secondary); transform: translateY(-1px); }
+   .cfg-mission-card.selected { background: var(--color-primary-bg); border-color: var(--color-primary-hover); box-shadow: 0 0 0 1px var(--color-primary-hover); }
+   .cfg-mission-name { font-size: 13px; font-weight: 800; color: #fff; }
+   .cfg-mission-desc { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; }
+
+   .cfg-order-section { width: 100%; background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 14px 16px; }
+   .cfg-order-lbl { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-tertiary); margin-bottom: 10px; }
+   .cfg-order-list { display: flex; gap: 8px; flex-wrap: wrap; }
+   .cfg-order-item { display: flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,0.05); border: 1px solid var(--color-border-tertiary); padding: 6px 12px 6px 6px; border-radius: 999px; }
+   .cfg-order-num { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary); color: #fff; font-size: 10px; font-weight: 800; flex-shrink: 0; }
+   .cfg-order-empty { font-size: 12px; color: var(--color-text-tertiary); font-style: italic; }
 
    /* ============================================
       HOST: Durante el juego - grid de 3 columnas
@@ -691,6 +861,20 @@
    .side-card { background: var(--color-background-primary); border: 1px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 16px; }
    .side-card-ttl { font-size: 13px; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #fff; margin-bottom: 12px; }
 
+   /* ---------- HOST: Panel de progreso en vivo (timer + respuestas) ---------- */
+   .progress-timer-display { display: flex; align-items: baseline; gap: 6px; justify-content: center; margin-bottom: 6px; }
+   .progress-timer-num { font-size: 40px; font-weight: 800; color: #1D9E75; line-height: 1; transition: color 0.6s ease; }
+   .progress-timer-lbl { font-size: 12px; font-weight: 600; color: var(--color-text-tertiary); }
+   .progress-answered-count { text-align: center; font-size: 12px; font-weight: 700; color: var(--color-text-secondary); margin-bottom: 12px; }
+
+   .progress-player-list { display: flex; flex-direction: column; gap: 6px; max-height: 220px; overflow-y: auto; }
+   .progress-player-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 10px; background: rgba(255,255,255,0.03); border-radius: var(--border-radius-md); }
+   .progress-player-name { font-size: 12px; font-weight: 600; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+   .progress-player-status { width: 18px; height: 18px; flex-shrink: 0; }
+   .progress-player-status svg { width: 100%; height: 100%; }
+   .progress-player-status.answered { color: var(--color-success); }
+   .progress-player-status.pending { color: var(--color-text-tertiary); }
+
    .lb-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
    .lb-tab { flex: 1; text-align: center; font-size: 11px; font-weight: 700; padding: 8px; border-radius: var(--border-radius-md); background: rgba(255,255,255,0.04); color: var(--color-text-secondary); border: 1px solid var(--color-border-tertiary); cursor: pointer; transition: all 0.15s; }
    .lb-tab.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
@@ -721,6 +905,9 @@
 
    /* ---------- HOST: Resultados finales ---------- */
    #host-results { align-items: center; justify-content: center; gap: 1.25rem; padding: 2.5rem 2rem; background: var(--color-dark-bg); }
+
+   .export-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 1.25rem; }
+   .export-status { font-size: 12px; font-weight: 600; color: var(--color-success); min-height: 16px; }
 
    /* ---------- Boss ---------- */
    .boss-bg { background: radial-gradient(circle at 50% 20%, #1B1030 0%, var(--color-dark-bg) 65%); color: #fff; align-items: center; justify-content: center; padding: 2rem; text-align: center; }

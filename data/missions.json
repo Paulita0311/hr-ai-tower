@@ -27,6 +27,7 @@
       "missionTitle": "El Tsunami de CVs",
       "brief": "Una empresa de servicios financieros necesita contratar 85 personas en 90 días para una nueva línea de negocio. El equipo de recruiting tiene 4 personas. Hay 12 posiciones críticas abiertas desde hace 72 días, el pipeline cubre solo el 31% de la demanda, 14 empleados internos compatibles que nadie ha contactado, y 9 descripciones de puesto pendientes de publicación. La Head de Talent Acquisition debe presentar un plan antes del viernes.",
       "tooltip": "Joule genera descripciones de puesto en minutos. El Candidate Skills AI ordena candidatos por compatibilidad real de habilidades del TIH. El Opportunity Marketplace detecta y activa talento interno automáticamente.",
+      "jouleTip": "Piensa en cuánto tiempo tarda tu equipo hoy en revisar CVs manualmente. ¿Qué pasaría si pudiera enfocarse solo en los 20 mejores perfiles de cada vacante?",
       "unexpectedEvent": {
         "emoji": "🏃",
         "title": "La Oferta de la Competencia",
@@ -85,6 +86,7 @@
       "missionTitle": "La Bienvenida que Nadie Preparó",
       "brief": "Una empresa de logística contrata entre 80 y 120 personas al mes. La rotación antes del día 90 es del 31% y cada salida temprana cuesta 4.200€. El 38% de los nuevos no completó las tareas obligatorias, el buzón de RR.HH. recibe 847 correos con preguntas básicas (tiempo de respuesta: 3,2 días), y el 67% de quienes abandonaron declararon que 'no supieron qué se esperaba de ellos en las primeras semanas'.",
       "tooltip": "Los Journeys personalizados del TIH cruzan habilidades actuales vs. requeridas y asignan cursos por brechas reales. Joule responde 24/7 en el idioma del empleado. Las notificaciones proactivas al manager detectan bloqueos antes de que sean irreversibles.",
+      "jouleTip": "El 67% de quienes abandonaron dijeron que no sabían qué se esperaba de ellos. ¿Qué herramienta podría darles claridad desde el primer día en su idioma?",
       "unexpectedEvent": {
         "emoji": "⚖️",
         "title": "Regulación Relámpago",
@@ -143,6 +145,7 @@
       "missionTitle": "El Laberinto de los Cambios",
       "brief": "Una empresa del sector energético con 7.100 empleados en 4 países enfrenta tres amenazas simultáneas: 387 solicitudes de cambio pendientes (espera media: 4,1 días), tasa de errores en datos maestros del 9,3% que impactará el cierre de nómina, y 4 empleados dados de baja cuyos accesos a sistemas siguen activos tras 3,8 días de retraso. People Intelligence detecta además 47 empleados con riesgo de abandono del 74%.",
       "tooltip": "Joule permite autoservicio conversacional y aprobaciones desde el chat. AI-assisted central governance (J535) detecta errores en datos maestros antes de que impacten nómina. El Journey de offboarding revoca accesos automáticamente al registrar la baja.",
+      "jouleTip": "387 solicitudes esperan en promedio 4,1 días para una aprobación. ¿Y si esas aprobaciones pudieran resolverse conversando, y los errores en los datos se detectaran antes de llegar a nómina en vez de después?",
       "unexpectedEvent": {
         "emoji": "🔓",
         "title": "Acceso Fantasma",
@@ -201,6 +204,7 @@
       "missionTitle": "El Error que Nadie Ve Venir",
       "brief": "Una empresa de manufactura con 14.000 empleados cierra su nómina quincenal con 11 especialistas en 9 días hábiles. En el último año: tres reprocesos parciales por errores no detectados (tablas fiscales sin actualizar, horas extras duplicadas, retroactivos mal aplicados). Recibe entre 200 y 300 consultas por quincena que tardan 4 días en responderse. Las reglas de validación llevan 14 meses sin actualizar porque la única persona que sabe hacerlo cubre dos vacantes.",
       "tooltip": "El Payroll Control Center Rule Assistant (J1372) permite crear reglas de validación en lenguaje natural y probarlas en simulación. El Payroll Explanation Agent (J910) resuelve consultas de empleados en segundos con explicaciones personalizadas de cada línea del recibo.",
+      "jouleTip": "Si la única persona que sabe actualizar las reglas de validación cubre dos vacantes, ¿qué pasa el día que no está? ¿Podrías crear y probar esas reglas sin escribir una sola línea de código?",
       "unexpectedEvent": {
         "emoji": "📋",
         "title": "El Cambio Fiscal de Medianoche",
@@ -259,6 +263,7 @@
       "missionTitle": "La Evaluación que Nadie Toma en Serio",
       "brief": "Una empresa de telecomunicaciones con 11.500 empleados tiene un problema sistémico: el 61% llega a noviembre sin una conversación de desempeño con su manager, las revisiones de mitad de año se completaron al 38%, y la evaluación promedio dura 22 minutos y siempre dice lo mismo. En la encuesta de clima, el 54% dijo que la evaluación no refleja su trabajo real. La calibración es negociación de cuotas sin datos. Empleados de alto potencial se van sin que nadie haya visto la señal.",
       "tooltip": "AI-assisted goal creation (J38) genera objetivos SMART en segundos. Employee Career Narrative (J1466) sintetiza logros, feedback y progreso en skills como base objetiva para la conversación. People Intelligence detecta sesgos y patrones atípicos antes de la calibración.",
+      "jouleTip": "Una evaluación de 22 minutos que siempre dice lo mismo no está midiendo nada real. ¿Qué pasaría si cada manager llegara a la conversación con un resumen objetivo del progreso real de su colaborador, generado automáticamente?",
       "unexpectedEvent": {
         "emoji": "🚪",
         "title": "La Renuncia Silenciosa",
@@ -317,6 +322,7 @@
       "missionTitle": "El Ciclo que Dura Cuatro Meses",
       "brief": "Una empresa de servicios financieros con 6.200 empleados tarda cuatro meses en cerrar su ciclo de merit review: 47 managers toman decisiones con un Excel que RR.HH. distribuye por correo, sin conectar la calificación de desempeño a la propuesta de aumento. En la última auditoría de equidad salarial, el 19% de las mujeres en roles senior estaban por debajo del percentil 25 frente al 6% de sus pares masculinos. Las correcciones se hicieron con presupuesto de emergencia, sin explicación posible. El ciclo siguiente empieza igual.",
       "tooltip": "El Pay Equity Agent (J1052) muestra a cada manager la situación de equidad de su propio equipo desde el inicio del ciclo. El People Intelligence Agent (J906) permite simular escenarios de distribución de presupuesto antes de comprometer ninguna decisión.",
+      "jouleTip": "Las brechas de equidad salarial se descubrieron en la auditoría, meses después de tomadas las decisiones. ¿Qué cambiaría si cada manager viera esa equidad desde el primer día del ciclo, en vez de al final?",
       "unexpectedEvent": {
         "emoji": "📊",
         "title": "La Filtración del Excel",
@@ -375,6 +381,7 @@
       "missionTitle": "La Directiva que No Puede Esperar",
       "brief": "Una institución financiera con 6.000 empleados en 5 países recibe una nueva directiva regulatoria: 1.800 empleados de operaciones y back-office deben demostrar competencias digitales y de manejo de datos en 9 meses o la empresa no superará la auditoría. El catálogo de Learning tiene 2.400 cursos. El equipo de L&D tiene 4 personas. No pueden asignar cursos manualmente a 1.800 personas ni saben cuáles son relevantes para cada perfil. El reloj corre.",
       "tooltip": "El TIH infiere habilidades de cada empleado y cruza con los requisitos regulatorios para generar rutas personalizadas. People Analytics correlaciona aprendizaje con KPIs operativos para eliminar cursos sin impacto real y reforzar a quienes no mejoran.",
+      "jouleTip": "Con 2.400 cursos disponibles y solo 4 personas en el equipo de L&D, ¿cómo sabrías cuál de esos cursos necesita cada una de las 1.800 personas sin revisarlas una por una?",
       "unexpectedEvent": {
         "emoji": "🔍",
         "title": "La Auditoría Sorpresa",
@@ -433,6 +440,7 @@
       "missionTitle": "Las Tres Sillas Vacías",
       "brief": "Una empresa de servicios tecnológicos con 4.500 empleados detecta 3 posiciones de liderazgo con alto riesgo de vacante en 12 meses: un Director de Cloud Architecture (jubilación confirmada), un Head of Data & Analytics (ha recibido oferta de la competencia), y un Director Regional de Operaciones (ascenso inminente a COO global). No existen sucesores formalmente nominados para ninguna de las tres. La VP de Talento tiene 5 días para presentar un plan al Board.",
       "tooltip": "Joule con TIH identifica sucesores potenciales en toda la compañía cruzando habilidades reales con requisitos del rol, incluyendo talento 'oculto' en áreas adyacentes. Dynamic Teams permite acelerar readiness con asignaciones reales antes de la transición.",
+      "jouleTip": "No hay sucesores nominados para ninguna de las tres posiciones. ¿Y si el candidato correcto ya trabaja en la empresa, con las habilidades adecuadas, pero en un área completamente distinta a la del puesto vacante?",
       "unexpectedEvent": {
         "emoji": "💼",
         "title": "La Oferta Irrechazable",

@@ -19,10 +19,20 @@ const GameEngine = (function () {
   };
 
   // ---------- Carga de datos ----------
-  async function loadData(path = "data/missions.json") {
+  // missionIds (opcional): filtra y reordena GAME_DATA.missions según ese
+  // array de ids, para partidas configuradas por el host con un subset
+  // de misiones en un orden específico.
+  async function loadData(path = "data/missions.json", missionIds) {
     const res = await fetch(path);
     if (!res.ok) throw new Error("No se pudo cargar missions.json");
     GAME_DATA = await res.json();
+
+    if (Array.isArray(missionIds) && missionIds.length) {
+      const byId = {};
+      GAME_DATA.missions.forEach((m) => { byId[m.id] = m; });
+      GAME_DATA.missions = missionIds.map((id) => byId[id]).filter(Boolean);
+    }
+
     return GAME_DATA;
   }
 

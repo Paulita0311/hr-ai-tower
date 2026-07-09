@@ -18,8 +18,26 @@ const Multiplayer = (function () {
     return code;
   }
 
+  // ---------- Limpieza de salas antiguas (>48h) ----------
+  async function cleanOldRooms() {
+    const snap = await db.ref("rooms").get();
+    if (!snap.exists()) return;
+
+    const rooms = snap.val();
+    const now = Date.now();
+    const maxAgeMs = 48 * 60 * 60 * 1000;
+
+    for (const roomId of Object.keys(rooms)) {
+      const room = rooms[roomId];
+      if (room && room.createdAt && (now - room.createdAt) > maxAgeMs) {
+        await db.ref("rooms/" + roomId).remove();
+      }
+    }
+  }
+
   // ---------- HOST: crea una sala nueva ----------
   async function createRoom() {
+    await cleanOldRooms();
     roomCode = generateRoomCode();
     isHost = true;
     await db.ref(`rooms/${roomCode}`).set({
@@ -32,7 +50,7 @@ const Multiplayer = (function () {
   }
 
   // ---------- PLAYER: se une a una sala existente ----------
-  async function joinRoom(code, playerName, avatar) {
+  async function joinRoom(code, playerName, avatar, email, company) {
     roomCode = code.toUpperCase();
     const roomRef = db.ref(`rooms/${roomCode}`);
     const snap = await roomRef.get();
@@ -45,6 +63,8 @@ const Multiplayer = (function () {
     await roomRef.child(`players/${playerId}`).set({
       name: playerName,
       avatar: avatar,
+      email: email || "",
+      company: company || "",
       ico: 0,
       resources: { productivity: 0, innovation: 0, trust: 0, integration: 0, experience: 0, governance: 0 },
       choices: {},
@@ -72,6 +92,44 @@ const Multiplayer = (function () {
     const updates = { status: newStatus };
     if (missionIdx !== undefined) updates.currentMissionIdx = missionIdx;
     await db.ref(`rooms/${roomCode}`).update(updates);
+  }
+
+  // ---------- HOST: guarda las misiones elegidas y su orden ----------
+  async function setSelectedMissions(missionIds) {
+    await db.ref(`rooms/${roomCode}`).update({ selectedMissions: missionIds });
+  }
+
+  // ---------- HOST: inicia el temporizador de la misión actual ----------
+  async function startMissionTimer(code, seconds) {
+    await db.ref(`rooms/${code}/timer`).set({
+      startedAt: firebase.database.ServerValue.TIMESTAMP,
+      duration: seconds,
+      paused: false
+    });
+  }
+
+  // ---------- HOST: pausa o reanuda el temporizador activo ----------
+  async function pauseResumeTimer(code) {
+    const timerRef = db.ref(`rooms/${code}/timer`);
+    const snap = await timerRef.get();
+    const timer = snap.val();
+    if (!timer) return;
+
+    if (timer.paused) {
+      // Reanudar: desplaza startedAt hacia adelante por lo que duró la pausa,
+      // así el cálculo de tiempo restante (duration - (now - startedAt)) sigue siendo correcto.
+      const pausedForMs = Date.now() - (timer.pausedAt || Date.now());
+      await timerRef.update({
+        paused: false,
+        startedAt: timer.startedAt + pausedForMs,
+        pausedAt: null
+      });
+    } else {
+      await timerRef.update({
+        paused: true,
+        pausedAt: firebase.database.ServerValue.TIMESTAMP
+      });
+    }
   }
 
   // ---------- PLAYER: guarda su elección y progreso ----------
@@ -116,6 +174,9 @@ const Multiplayer = (function () {
     onRoomUpdate,
     onPlayersUpdate,
     advanceRoom,
+    setSelectedMissions,
+    startMissionTimer,
+    pauseResumeTimer,
     syncPlayerChoice,
     leaveRoom,
     closeRoom,

@@ -27,9 +27,49 @@
     </div>
     <div class="host-players-lbl">Jugadores conectados (<span id="player-count">0</span>)</div>
     <div class="host-players-grid" id="host-players-grid"></div>
-    <button class="btn-go" id="btn-start-game" onclick="HostApp.startGame()" disabled>
+    <div class="selected-missions-wrap" id="lobby-selected-wrap" style="display:none">
+      <div class="selected-missions-lbl">Misiones seleccionadas:</div>
+      <div class="selected-missions-list" id="lobby-selected-list"></div>
+    </div>
+    <label class="sound-toggle" for="sound-toggle-input">
+      <input type="checkbox" id="sound-toggle-input" onchange="HostApp.toggleSound(this.checked)">
+      <span class="sound-toggle-track"><span class="sound-toggle-thumb"></span></span>
+      <span class="sound-toggle-label">Sonido activado</span>
+    </label>
+    <button class="btn-go" id="btn-start-game" onclick="HostApp.openConfigScreen()" disabled>
       Iniciar juego
     </button>
+  </div>
+
+  <!-- CONFIGURACIÓN DE PARTIDA -->
+  <div class="scr" id="host-config">
+    <div class="cfg-wrap">
+      <div class="host-title">Configura tu partida</div>
+      <div class="host-sub">Elige qué misiones jugar y en qué orden</div>
+
+      <div class="cfg-presets">
+        <button class="cfg-preset-btn" onclick="HostApp.applyPreset(3)">
+          Demo rápida <span class="cfg-preset-count">3 pisos</span>
+        </button>
+        <button class="cfg-preset-btn" onclick="HostApp.applyPreset(5)">
+          Demo estándar <span class="cfg-preset-count">5 pisos</span>
+        </button>
+        <button class="cfg-preset-btn" onclick="HostApp.applyPreset(8)">
+          Partida completa <span class="cfg-preset-count">8 pisos</span>
+        </button>
+      </div>
+
+      <div class="cfg-mission-grid" id="cfg-mission-grid"></div>
+
+      <div class="cfg-order-section">
+        <div class="cfg-order-lbl">Orden de juego:</div>
+        <div class="cfg-order-list" id="cfg-order-list"></div>
+      </div>
+
+      <button class="btn-go" id="btn-confirm-config" onclick="HostApp.confirmConfig()" disabled>
+        Iniciar juego con 0 pisos
+      </button>
+    </div>
   </div>
 
   <!-- DURANTE EL JUEGO -->
@@ -59,9 +99,14 @@
 
       <div class="gh-actions">
         <div class="gh-status"><span class="gh-status-dot"></span>HOST <span class="gh-status-sub">&middot; Control manual</span></div>
-        <button class="gh-btn-next" id="btn-next-mission" onclick="HostApp.nextMission()">
-          Siguiente <span class="gh-arrow">&rarr;</span>
-        </button>
+        <div class="gh-timer-actions">
+          <button class="gh-btn-pause" id="btn-pause-timer" onclick="HostApp.pauseTimer()">
+            Pausar
+          </button>
+          <button class="gh-btn-next" id="btn-next-mission" onclick="HostApp.nextMission()">
+            Siguiente misión <span class="gh-arrow">&rarr;</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -92,8 +137,18 @@
         </div>
       </div>
 
-      <!-- Columna derecha: leaderboard + solidez -->
+      <!-- Columna derecha: progreso + leaderboard + solidez -->
       <div class="host-side-col">
+        <div class="side-card progress-card">
+          <div class="side-card-ttl">Progreso de la ronda</div>
+          <div class="progress-timer-display">
+            <span class="progress-timer-num" id="progress-timer-num">45</span>
+            <span class="progress-timer-lbl">segundos</span>
+          </div>
+          <div class="progress-answered-count" id="progress-answered-count">0 de 0 respondieron</div>
+          <div class="progress-player-list" id="progress-player-list"></div>
+        </div>
+
         <div class="side-card">
           <div class="side-card-ttl">Leaderboard</div>
           <div class="lb-tabs">

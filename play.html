@@ -203,6 +203,8 @@
     <div class="game-title">HR AI Tower</div>
     <div class="game-sub">Construye una organización resiliente con SAP Business AI</div>
     <input type="text" id="input-player-name" placeholder="Tu nombre" maxlength="20" class="input-field">
+    <input type="email" id="input-player-email" placeholder="Correo corporativo" class="input-field">
+    <input type="text" id="input-player-company" placeholder="Empresa" maxlength="40" class="input-field">
     <button class="btn-go" id="btn-go" onclick="PlayerApp.joinGame()" disabled>Unirme a la partida</button>
   </div>
 
@@ -211,6 +213,10 @@
     <div class="game-title">&iexcl;Listo!</div>
     <div class="game-sub">Esperando a que el anfitrión inicie el juego&hellip;</div>
     <div class="loader"></div>
+    <div class="selected-missions-wrap" id="wait-selected-wrap" style="display:none">
+      <div class="selected-missions-lbl">Misiones seleccionadas:</div>
+      <div class="selected-missions-list" id="wait-selected-list"></div>
+    </div>
   </div>
 
   <!-- PASO 4: pantalla de contexto antes del juego -->
@@ -317,6 +323,11 @@
       </div>
     </header>
 
+    <div class="mission-timer" id="mission-timer" style="display:none">
+      <div class="timer-bar-track"><div class="timer-bar-fill" id="timer-bar-fill"></div></div>
+      <div class="timer-seconds-row"><span class="timer-seconds" id="timer-seconds">45</span></div>
+    </div>
+
     <div class="tg-layout" id="tg-layout">
 
       <div class="tg-tower-col" id="tg-tower-col">
@@ -349,6 +360,40 @@
         </div>
       </div>
 
+    </div>
+
+    <!-- Comodín Joule: pistas contextuales, máx. 2 usos por partida -->
+    <div class="joule-widget" id="joule-widget">
+      <div class="joule-uses" id="joule-uses">
+        <span class="joule-use-dot"></span>
+        <span class="joule-use-dot"></span>
+      </div>
+
+      <div class="joule-bubble" id="joule-bubble">
+        <div class="joule-bubble-text" id="joule-bubble-text"></div>
+      </div>
+
+      <button class="joule-btn" id="joule-btn" onclick="PlayerApp.useJoule()">
+        <svg class="joule-ring" viewBox="0 0 64 64">
+          <circle class="joule-ring-bg" cx="32" cy="32" r="28"/>
+          <circle class="joule-ring-fill" id="joule-ring-fill" cx="32" cy="32" r="28"/>
+        </svg>
+        <svg class="joule-diamond" viewBox="0 0 48 48" fill="none">
+          <defs>
+            <linearGradient id="jouleGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#6B21E8"/>
+              <stop offset="100%" stop-color="#9B59B6"/>
+            </linearGradient>
+          </defs>
+          <polygon points="24,4 44,24 24,44 4,24" fill="url(#jouleGrad)"/>
+          <polygon points="24,11 37,24 24,37 11,24" fill="rgba(255,255,255,0.16)"/>
+          <path class="joule-star" d="M31,24 L26,26 L24,31 L22,26 L17,24 L22,22 L24,17 L26,22 Z" fill="#fff"/>
+          <path class="joule-sparkle" d="M40,6 L41.2,7.8 L43,9 L41.2,10.2 L40,12 L38.8,10.2 L37,9 L38.8,7.8 Z" fill="#fff"/>
+          <path class="joule-sparkle" d="M7,35 L8.2,36.8 L10,38 L8.2,39.2 L7,41 L5.8,39.2 L4,38 L5.8,36.8 Z" fill="#fff"/>
+          <path class="joule-sparkle" d="M38,36 L38.8,37.2 L40,38 L38.8,38.8 L38,40 L37.2,38.8 L36,38 L37.2,37.2 Z" fill="#fff"/>
+        </svg>
+        <span class="joule-label" id="joule-label">Joule</span>
+      </button>
     </div>
   </div>
 
