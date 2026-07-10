@@ -28,13 +28,23 @@
 
     function renderQR(link) {
       const wrap = document.getElementById("qr-canvas-wrap");
+      wrap.innerHTML = "";
       if (typeof QRCode === "undefined") {
         wrap.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:11px;padding:12px;text-align:center">QR no disponible<br>Comparte el link</div>';
         return;
       }
-      QRCode.toCanvas(link, { width: 180, margin: 1 }, (err, canvas) => {
-        if (!err) wrap.appendChild(canvas);
-      });
+      try {
+        new QRCode(wrap, {
+          text: link,
+          width: 180,
+          height: 180,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch(e) {
+        wrap.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:11px;padding:12px;text-align:center">QR no disponible<br>Comparte el link</div>';
+      }
     }
 
     function listenPlayers() {
