@@ -187,10 +187,10 @@
   </div>
 
   <!-- RESULTADOS FINALES -->
-  <div class="scr" id="host-results">
-    <div class="host-title">Resultados Finales</div>
-    <div class="host-sub">Ranking por Índice de Confianza (ICO)</div>
-    <div class="leaderboard" id="leaderboard" style="margin-top:1rem"></div>
+  <div class="scr" id="host-results" style="flex-direction:column;overflow-y:auto;padding:2rem">
+    <div class="host-title" style="margin-bottom:0.25rem">Resultados Finales</div>
+    <div class="host-sub" style="margin-bottom:1.5rem">Ranking por Granos de Arena</div>
+    <div id="host-results-content"></div>
     <button class="btn-go" onclick="HostApp.restart()" style="margin-top:1.5rem">
       Nueva partida
     </button>

@@ -1,10 +1,16 @@
 /* ============================================
-   HR AI TOWER - TOWER RENDERER (PixiJS)
-   Dibuja la torre del jugador en un <canvas>:
-   base, pisos que caen con rebote, bandera al
-   completar y partículas doradas en aciertos
-   nativos. Sin bundlers: usa el global PIXI
-   cargado por CDN en play.html.
+   HR AI TOWER - TOWER RENDERER (Canvas 2D)
+   Torre construida DE ARENA. La solidez de cada
+   piso depende de la decision (campo `stability`
+   0..100): alto = arenisca compacta dorada, medio =
+   arena seca algo agrietada, bajo = bloque erosionado
+   que desmorona arena.
+
+   Usa Canvas 2D puro: NO depende de PixiJS ni de
+   WebGL/GPU, asi que funciona en cualquier navegador.
+   API publica identica a la version anterior:
+     init(canvasEl, missions), resize(),
+     buildFloor(idx, type, label, stability), destroy()
    ============================================ */
 
 function easeOutBounce(t) {
@@ -15,146 +21,190 @@ function easeOutBounce(t) {
   return n1 * (t -= 2.625 / d1) * t + 0.984375;
 }
 
-const FLOOR_COLORS = {
-  native: { top: "#2E8CFF", base: "#0070F2" },
-  external: { top: "#D6912E", base: "#BA7517" },
-  manual: { top: "#7A7A7A", base: "#555555" }
-};
+function stabilityToSolidity(stability, type) {
+  let s = stability;
+  if (typeof s !== "number") s = type === "native" ? 85 : type === "external" ? 50 : 20;
+  return Math.max(0, Math.min(1, s / 100));
+}
+
+function _hexRgb(h) { h = h.replace("#", ""); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; }
+function _lerp(a, b, t) { return a + (b - a) * t; }
+function mixHex(c1, c2, t) {
+  const a = _hexRgb(c1), b = _hexRgb(c2);
+  const to = (n) => Math.round(n).toString(16).padStart(2, "0");
+  return "#" + to(_lerp(a[0], b[0], t)) + to(_lerp(a[1], b[1], t)) + to(_lerp(a[2], b[2], t));
+}
+
+function sandPalette(s) {
+  return {
+    top:    mixHex("#BFB299", "#F0D083", s),
+    base:   mixHex("#8F8060", "#C6923B", s),
+    border: mixHex("#A99C80", "#F5E0A6", s)
+  };
+}
+
+function seededRng(seed) {
+  let a = seed >>> 0;
+  return function () {
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function buildTopEdge(seed, notches, amp, solidity) {
+  const rnd = seededRng(seed);
+  const pts = [];
+  for (let i = 0; i <= notches; i++) {
+    let d = rnd();
+    if (solidity > 0.75) d *= 0.32;
+    else if (solidity > 0.45) d *= 0.7;
+    else d = Math.pow(d, 0.6);
+    pts.push(d * amp);
+  }
+  if (solidity < 0.4 && notches > 3) {
+    const k = 1 + Math.floor(rnd() * (notches - 2));
+    pts[k] += amp * 0.6;
+    pts[k + 1] += amp * 0.4;
+  }
+  return pts;
+}
+
+const NOTCHES = 12;
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
 
 class TowerRenderer {
   constructor() {
-    this.app = null;
     this.canvas = null;
+    this.ctx = null;
+    this.dpr = 1;
     this.missions = [];
-    this.floorState = [];
-    this.floorSprites = [];
-    this.container = null;
-    this.particleLayer = null;
+    this.floors = [];          // {built, type, label, stability, solidity, seed, animStart}
     this.particles = [];
-    this.flag = null;
-    this.flagWaveStarted = false;
-    this.geometry = null;
+    this.trickleFloors = new Set();
     this.width = 0;
     this.height = 0;
+    this.geometry = null;
     this.builtCount = 0;
-    this.texCache = {};
+    this.flag = null;          // {start, waveStarted}
+    this.running = false;
+    this.rafId = null;
+    this._lastNow = 0;
+    this._resizeObserver = null;
   }
 
   init(canvasEl, missions) {
-    if (this.app) this.destroy();
-    if (typeof PIXI === "undefined" || !canvasEl) return;
+    if (this.canvas) this.destroy();
+    if (!canvasEl || !canvasEl.getContext) return;
 
     this.canvas = canvasEl;
+    this.ctx = canvasEl.getContext("2d");
     this.missions = missions || [];
-    this.floorState = this.missions.map(() => "empty");
-    this.floorSprites = this.missions.map(() => null);
+    this.floors = this.missions.map(() => ({ built: false }));
     this.particles = [];
-    this.flag = null;
-    this.flagWaveStarted = false;
+    this.trickleFloors = new Set();
     this.builtCount = 0;
+    this.flag = null;
     this.width = 0;
     this.height = 0;
+    this.geometry = null;
 
-    this.app = new PIXI.Application({
-      view: canvasEl,
-      backgroundAlpha: 0,
-      antialias: true,
-      resolution: Math.min(window.devicePixelRatio || 1, 2),
-      autoDensity: true
-    });
-
-    this.container = new PIXI.Container();
-    this.particleLayer = new PIXI.Container();
-    this.app.stage.addChild(this.container);
-    this.app.stage.addChild(this.particleLayer);
-
-    this.app.ticker.add(() => this._tickParticles());
+    // El canvas siempre en bloque y transparente; la columna recorta desbordes.
+    this.canvas.style.display = "block";
+    this.canvas.style.background = "transparent";
+    this.canvas.style.maxWidth = "100%";
+    const host = this.canvas.parentElement;
+    if (host) host.style.overflow = "hidden";
 
     if (typeof ResizeObserver !== "undefined") {
       this._resizeObserver = new ResizeObserver(() => this.resize());
-      this._resizeObserver.observe(canvasEl);
+      this._resizeObserver.observe(host || this.canvas);
     }
-    window.addEventListener("resize", this._onWindowResize || (this._onWindowResize = () => this.resize()));
+    this._onWindowResize = () => this.resize();
+    window.addEventListener("resize", this._onWindowResize);
 
-    this.resize();
-  }
+    this.running = true;
+    this._lastNow = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    this._startLoop();
 
-  resize() {
-    if (!this.app || !this.canvas) return;
-    const w = Math.round(this.canvas.clientWidth || this.canvas.parentElement.clientWidth || 280);
-    const h = Math.round(this.canvas.clientHeight || this.canvas.parentElement.clientHeight || 200);
-    if (w < 10 || h < 10) return;
-    if (w === this.width && h === this.height) return;
-    this.width = w;
-    this.height = h;
-    this.app.renderer.resize(w, h);
-    this._layout();
-  }
-
-  buildFloor(idx, type, label) {
-    if (!this.app) return;
-    if (!this.geometry) this.resize();
-    if (!this.geometry) return;
-
-    this._destroyFloorVisual(idx);
-    this.floorState[idx] = { type, label: label || "" };
-    this.builtCount = this.floorState.filter((s) => s !== "empty").length;
-
-    const holder = this._createFloorVisual(idx);
-    const targetY = holder._targetY;
-    holder.y = -this.geometry.floorH * 2 - idx * 16;
-    this.container.addChild(holder);
-    this.floorSprites[idx] = holder;
-
-    this._animateFall(holder, targetY);
-
-    if (type === "native") {
-      const cx = holder._targetX + this._floorWidth(idx) / 2;
-      const cy = targetY + this.geometry.floorH / 2;
-      this._spawnGoldParticles(cx, cy);
-    }
-
-    this._layoutFlag();
+    // init() suele correr con la pantalla aun oculta -> tamaño 0. Reintenta.
+    this._ensureSized(40);
   }
 
   destroy() {
-    if (this._resizeObserver) this._resizeObserver.disconnect();
-    if (this.app) {
-      this.app.destroy(false, { children: true, texture: false, baseTexture: false });
-    }
-    this.app = null;
+    this.running = false;
+    if (this.rafId != null && typeof cancelAnimationFrame !== "undefined") cancelAnimationFrame(this.rafId);
+    this.rafId = null;
+    if (this._resizeObserver) { this._resizeObserver.disconnect(); this._resizeObserver = null; }
+    if (this._onWindowResize) window.removeEventListener("resize", this._onWindowResize);
+    if (this.ctx && this.canvas) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.canvas = null;
+    this.ctx = null;
   }
 
-  /* ---------- layout ---------- */
+  /* ---------- medidas ---------- */
 
-  _layout() {
+  resize() {
+    if (!this.canvas || !this.ctx) return;
+    const host = this.canvas.parentElement || this.canvas;
+    const hostW = host.clientWidth || 0;
+    const hostH = host.clientHeight || 0;
+    if (hostW < 10 || hostH < 10) return;   // aun oculto
+
+    let siblings = 0;
+    const kids = host.children || [];
+    for (let i = 0; i < kids.length; i++) if (kids[i] !== this.canvas) siblings += kids[i].offsetHeight || 0;
+    const cs = window.getComputedStyle(host);
+    const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+    const padY = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+    const gap = parseFloat(cs.rowGap || cs.gap) || 0;
+
+    let w = Math.round(hostW - padX);
+    let h = Math.round(hostH - siblings - padY - gap);
+    if (h < 120) h = 200;
+    h = Math.min(h, (window.innerHeight || 900) + 40);
+    w = Math.max(60, Math.min(w, 300));
+
+    if (w === this.width && h === this.height && this.geometry) return;
+
+    this.width = w;
+    this.height = h;
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.canvas.width = Math.round(w * this.dpr);
+    this.canvas.height = Math.round(h * this.dpr);
+    this.canvas.style.width = w + "px";
+    this.canvas.style.height = h + "px";
+    this.canvas.style.flex = "none";
+    this._computeGeometry();
+  }
+
+  _ensureSized(triesLeft) {
+    if (!this.canvas) return;
+    this.resize();
+    if ((this.geometry && this.width > 0) || triesLeft <= 0) return;
+    setTimeout(() => this._ensureSized(triesLeft - 1), 150);
+  }
+
+  _computeGeometry() {
     const total = this.missions.length;
-    if (!total) return;
-
+    if (!total) { this.geometry = null; return; }
     const baseH = Math.max(8, Math.round(this.height * 0.035));
     const padding = 10;
     const flagSpace = 30;
     const gap = 6;
     const availH = this.height - baseH - flagSpace - padding * 2;
     const floorH = Math.max(24, Math.min(52, availH / total - gap));
-
     this.geometry = { baseH, padding, flagSpace, gap, floorH };
-
-    this._drawBase();
-
-    for (let i = 0; i < total; i++) {
-      this._destroyFloorVisual(i);
-      if (this.floorState[i] === "empty") {
-        this._drawEmptyFloor(i);
-      } else {
-        const holder = this._createFloorVisual(i);
-        holder.y = holder._targetY;
-        this.container.addChild(holder);
-        this.floorSprites[i] = holder;
-      }
-    }
-
-    this._layoutFlag();
   }
 
   _floorWidth(idx) {
@@ -169,295 +219,292 @@ class TowerRenderer {
     return bottomY - g.floorH;
   }
 
-  _destroyFloorVisual(idx) {
-    const existing = this.floorSprites[idx];
-    if (existing) {
-      this.container.removeChild(existing);
-      existing.destroy({ children: true });
-      this.floorSprites[idx] = null;
+  /* ---------- construir piso ---------- */
+
+  buildFloor(idx, type, label, stability) {
+    if (!this.geometry) this.resize();
+    if (!this.geometry || idx == null || idx < 0) return;
+    const solidity = stabilityToSolidity(stability, type);
+    this.floors[idx] = {
+      built: true,
+      type,
+      label: label || "",
+      stability: typeof stability === "number" ? stability : Math.round(solidity * 100),
+      solidity,
+      seed: 1013 * (idx + 1) + 17,
+      animStart: (typeof performance !== "undefined" ? performance.now() : Date.now())
+    };
+    this.builtCount = this.floors.filter((f) => f && f.built).length;
+
+    if (solidity < 0.4) this.trickleFloors.add(idx); else this.trickleFloors.delete(idx);
+
+    const fw = this._floorWidth(idx);
+    const cx = (this.width - fw) / 2 + fw / 2;
+    const cy = this._floorTopY(idx) + this.geometry.floorH;
+    this._spawnSandPuff(cx, cy, solidity);
+    if (solidity >= 0.7) this._spawnGold(cx, cy - this.geometry.floorH / 2);
+
+    if (this.builtCount >= this.missions.length && !this.flag) {
+      this.flag = { start: (typeof performance !== "undefined" ? performance.now() : Date.now()), waveStarted: false };
     }
   }
 
-  _drawBase() {
-    if (this.baseG) {
-      this.container.removeChild(this.baseG);
-      this.baseG.destroy();
+  /* ---------- loop ---------- */
+
+  _startLoop() {
+    if (typeof requestAnimationFrame === "undefined") return;
+    const loop = (now) => {
+      if (!this.running) return;
+      this._update(now);
+      this._draw();
+      this.rafId = requestAnimationFrame(loop);
+    };
+    this.rafId = requestAnimationFrame(loop);
+  }
+
+  _update(now) {
+    // emision de arena en pisos debiles
+    if (this.trickleFloors.size && this.geometry) {
+      this.trickleFloors.forEach((idx) => { if (Math.random() < 0.08) this._spawnTrickle(idx); });
     }
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      const age = now - p.birth;
+      if (age >= p.maxLife) { this.particles.splice(i, 1); continue; }
+      p.x += p.vx; p.y += p.vy; p.vy += p.grav; p.alpha = 1 - age / p.maxLife;
+    }
+  }
+
+  /* ---------- dibujo ---------- */
+
+  _draw() {
+    const ctx = this.ctx;
+    if (!ctx || !this.geometry) return;
+    ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+    ctx.clearRect(0, 0, this.width, this.height);
+
+    this._drawBase(ctx);
+
+    const now = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    for (let i = 0; i < this.missions.length; i++) {
+      const f = this.floors[i];
+      if (!f || !f.built) { this._drawEmptyFloor(ctx, i); continue; }
+      const targetY = this._floorTopY(i);
+      let y = targetY;
+      const t = Math.min(1, (now - f.animStart) / 650);
+      if (t < 1) {
+        const startY = -this.geometry.floorH * 2 - i * 16;
+        const eased = f.solidity >= 0.7 ? easeOutBounce(t) : _lerp(easeOutBounce(t), 1 - Math.pow(1 - t, 2), 1 - f.solidity);
+        y = startY + (targetY - startY) * eased;
+      }
+      const fw = this._floorWidth(i);
+      this._drawFloor(ctx, (this.width - fw) / 2, y, fw, this.geometry.floorH, f.solidity, f.seed, f.label);
+    }
+
+    this._drawParticles(ctx);
+    this._drawFlag(ctx, now);
+  }
+
+  _drawBase(ctx) {
     const g = this.geometry;
     const baseW = Math.min(this.width - 10, 250);
     const x = (this.width - baseW) / 2;
     const y = this.height - g.padding - g.baseH;
-    const gfx = new PIXI.Graphics();
-    gfx.beginFill(0x2A3B5C);
-    gfx.drawRoundedRect(x, y, baseW, g.baseH, 4);
-    gfx.endFill();
-    gfx.lineStyle(1, 0x0A1628, 0.7);
-    gfx.drawRoundedRect(x, y, baseW, g.baseH, 4);
-    this.container.addChildAt(gfx, 0);
-    this.baseG = gfx;
+    ctx.fillStyle = "#4A3F28";
+    roundRectPath(ctx, x, y, baseW, g.baseH, 4); ctx.fill();
+    ctx.fillStyle = "#2E2717";
+    roundRectPath(ctx, x, y + g.baseH * 0.55, baseW, g.baseH * 0.45, 3); ctx.fill();
+    ctx.strokeStyle = "rgba(26,21,10,0.8)"; ctx.lineWidth = 1;
+    roundRectPath(ctx, x, y, baseW, g.baseH, 4); ctx.stroke();
   }
 
-  _drawEmptyFloor(idx) {
-    const floorW = this._floorWidth(idx);
-    const floorH = this.geometry.floorH;
-    const x = (this.width - floorW) / 2;
+  _drawEmptyFloor(ctx, idx) {
+    const fw = this._floorWidth(idx);
+    const fh = this.geometry.floorH;
+    const x = (this.width - fw) / 2;
     const y = this._floorTopY(idx);
-
-    const g = new PIXI.Graphics();
-    g.lineStyle(1.5, 0xFFFFFF, 0.5);
-    this._dashedRoundedRect(g, x, y, floorW, floorH, 9, 5, 4);
-
-    const txt = new PIXI.Text(String(idx + 1), new PIXI.TextStyle({
-      fontFamily: "Inter, sans-serif",
-      fontSize: 11,
-      fontWeight: "700",
-      fill: 0xFFFFFF
-    }));
-    txt.alpha = 0.32;
-    txt.anchor.set(0.5);
-    txt.x = x + floorW / 2;
-    txt.y = y + floorH / 2;
-
-    const holder = new PIXI.Container();
-    holder.addChild(g);
-    holder.addChild(txt);
-    this.container.addChild(holder);
-    this.floorSprites[idx] = holder;
+    ctx.save();
+    ctx.strokeStyle = "rgba(217,199,154,0.5)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5, 4]);
+    roundRectPath(ctx, x, y, fw, fh, 9); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = "rgba(232,217,180,0.3)";
+    ctx.font = "700 11px Inter, sans-serif";
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(String(idx + 1), x + fw / 2, y + fh / 2);
+    ctx.restore();
   }
 
-  _dashedRoundedRect(g, x, y, w, h, r, dash, gap) {
-    const segments = [
-      [x + r, y, x + w - r, y],
-      [x + w, y + r, x + w, y + h - r],
-      [x + w - r, y + h, x + r, y + h],
-      [x, y + h - r, x, y + r]
-    ];
-    segments.forEach(([x1, y1, x2, y2]) => this._dashLine(g, x1, y1, x2, y2, dash, gap));
-  }
+  _drawFloor(ctx, x, y, w, h, solidity, seed, label) {
+    const pal = sandPalette(solidity);
+    const rough = 1 - solidity;
+    const amp = rough * Math.min(16, h * 0.42);
+    const edge = buildTopEdge(seed, NOTCHES, amp, solidity);
+    const topY = (i) => y + edge[i] + 2;
 
-  _dashLine(g, x1, y1, x2, y2, dash, gap) {
-    const dx = x2 - x1, dy = y2 - y1;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist === 0) return;
-    const ux = dx / dist, uy = dy / dist;
-    let pos = 0, draw = true;
-    g.moveTo(x1, y1);
-    while (pos < dist) {
-      const segLen = Math.min(draw ? dash : gap, dist - pos);
-      const nx = x1 + ux * (pos + segLen);
-      const ny = y1 + uy * (pos + segLen);
-      if (draw) g.lineTo(nx, ny); else g.moveTo(nx, ny);
-      pos += segLen;
-      draw = !draw;
+    // resplandor calido en pisos solidos
+    if (solidity >= 0.7) {
+      ctx.save();
+      ctx.shadowColor = "rgba(232,184,75,0.6)";
+      ctx.shadowBlur = 18;
+      ctx.fillStyle = "rgba(232,184,75,0.22)";
+      ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
+      ctx.restore();
     }
-  }
 
-  _gradientTexture(top, base) {
-    const key = top + "|" + base;
-    if (this.texCache[key]) return this.texCache[key];
-    const c = document.createElement("canvas");
-    c.width = 8;
-    c.height = 64;
-    const ctx = c.getContext("2d");
-    const grad = ctx.createLinearGradient(0, 0, 0, 64);
-    grad.addColorStop(0, top);
-    grad.addColorStop(1, base);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, 8, 64);
-    const tex = PIXI.Texture.from(c);
-    this.texCache[key] = tex;
-    return tex;
-  }
-
-  _createFloorVisual(idx) {
-    const state = this.floorState[idx];
-    const floorW = this._floorWidth(idx);
-    const floorH = this.geometry.floorH;
-    const targetX = (this.width - floorW) / 2;
-    const targetY = this._floorTopY(idx);
-
-    const c = FLOOR_COLORS[state.type] || FLOOR_COLORS.manual;
-    const baseHex = PIXI.utils.string2hex(c.base);
-    const topHex = PIXI.utils.string2hex(c.top);
-
-    const holder = new PIXI.Container();
-
-    const glow = new PIXI.Graphics();
-    glow.beginFill(baseHex, 0.45);
-    glow.drawRoundedRect(-5, -5, floorW + 10, floorH + 10, 13);
-    glow.endFill();
-    if (typeof PIXI.BlurFilter === "function") {
-      const blur = new PIXI.BlurFilter();
-      blur.blur = 7;
-      glow.filters = [blur];
-    }
-    holder.addChild(glow);
-
-    const sprite = new PIXI.Sprite(this._gradientTexture(c.top, c.base));
-    sprite.width = floorW;
-    sprite.height = floorH;
-    holder.addChild(sprite);
-
-    const maskG = new PIXI.Graphics();
-    maskG.beginFill(0xFFFFFF);
-    maskG.drawRoundedRect(0, 0, floorW, floorH, 9);
-    maskG.endFill();
-    maskG.renderable = false;
-    holder.addChild(maskG);
-    sprite.mask = maskG;
-
-    const border = new PIXI.Graphics();
-    border.lineStyle(2, topHex, 0.95);
-    border.drawRoundedRect(1, 1, floorW - 2, floorH - 2, 8);
-    holder.addChild(border);
-
-    const txt = new PIXI.Text(state.label, new PIXI.TextStyle({
-      fontFamily: "Inter, sans-serif",
-      fontSize: Math.max(10, Math.min(13, Math.floor(floorH * 0.28))),
-      fontWeight: "700",
-      fill: 0xFFFFFF,
-      align: "center",
-      wordWrap: true,
-      wordWrapWidth: floorW - 8
-    }));
-    txt.anchor.set(0.5);
-    txt.x = floorW / 2;
-    txt.y = floorH / 2;
-    holder.addChild(txt);
-
-    holder.x = targetX;
-    holder._targetX = targetX;
-    holder._targetY = targetY;
-    return holder;
-  }
-
-  _animateFall(displayObj, targetY) {
-    const startY = displayObj.y;
-    const duration = 650;
-    const startTime = performance.now();
-    const tick = () => {
-      const elapsed = performance.now() - startTime;
-      const t = Math.min(1, elapsed / duration);
-      const eased = easeOutBounce(t);
-      displayObj.y = startY + (targetY - startY) * eased;
-      if (t >= 1) {
-        displayObj.y = targetY;
-        this.app.ticker.remove(tick);
-      }
+    const path = () => {
+      ctx.beginPath();
+      ctx.moveTo(x, y + h);
+      ctx.lineTo(x, topY(0));
+      for (let i = 0; i <= NOTCHES; i++) ctx.lineTo(x + (w * i) / NOTCHES, topY(i));
+      ctx.lineTo(x + w, y + h);
+      ctx.closePath();
     };
-    this.app.ticker.add(tick);
-  }
 
-  /* ---------- bandera ---------- */
+    const g = ctx.createLinearGradient(0, y, 0, y + h);
+    g.addColorStop(0, pal.top); g.addColorStop(1, pal.base);
+    ctx.save();
+    path(); ctx.fillStyle = g; ctx.fill(); ctx.clip();
 
-  _layoutFlag() {
-    const total = this.missions.length;
-    if (!total || !this.geometry) return;
-    const allBuilt = this.builtCount >= total;
-    const topY = this._floorTopY(total - 1);
-    const centerX = this.width / 2;
-
-    if (!this.flag) {
-      this.flag = new PIXI.Container();
-
-      const pole = new PIXI.Graphics();
-      pole.lineStyle(2, 0xD9DEE8, 1);
-      pole.moveTo(0, 0);
-      pole.lineTo(0, -22);
-      this.flag.addChild(pole);
-
-      const cloth = new PIXI.Graphics();
-      cloth.beginFill(0x0070F2);
-      cloth.drawPolygon([0, -22, 16, -18, 0, -14]);
-      cloth.endFill();
-      cloth.name = "cloth";
-      this.flag.addChild(cloth);
-
-      this.flag.visible = false;
-      this.container.addChild(this.flag);
+    // granos de arena
+    const rnd = seededRng(seed * 3 + 1);
+    const grains = Math.min(220, Math.round(w * h * 0.05));
+    for (let i = 0; i < grains; i++) {
+      const gx = x + rnd() * w, gy = y + rnd() * h;
+      ctx.fillStyle = rnd() > 0.5 ? "rgba(255,246,220,0.13)" : "rgba(74,52,22,0.13)";
+      ctx.fillRect(gx, gy, 1.3, 1.3);
     }
+    // realce de compactacion + sombra base
+    ctx.fillStyle = "rgba(255,246,230," + (0.22 * solidity + 0.05) + ")";
+    ctx.fillRect(x, y + amp + 2, w, Math.max(2, h * 0.12));
+    ctx.fillStyle = "rgba(35,24,8,0.26)";
+    ctx.fillRect(x, y + h - Math.max(2, h * 0.18), w, Math.max(2, h * 0.18));
+    // grietas
+    const crackCount = Math.round(rough * 4);
+    ctx.strokeStyle = "rgba(30,20,6,0.45)";
+    for (let c = 0; c < crackCount; c++) {
+      ctx.lineWidth = 0.8 + rnd() * 1.3;
+      let cx = x + 6 + rnd() * (w - 12), cy = y + amp + 4 + rnd() * (h - amp - 8);
+      ctx.beginPath(); ctx.moveTo(cx, cy);
+      const segs = 3 + Math.floor(rnd() * 3);
+      for (let s = 0; s < segs; s++) { cx += (rnd() - 0.5) * 16; cy += 3 + rnd() * 7; ctx.lineTo(cx, cy); }
+      ctx.stroke();
+    }
+    // remaches en pisos solidos
+    if (solidity >= 0.7) {
+      ctx.fillStyle = "rgba(255,240,200,0.5)";
+      for (let s = 0; s < 3; s++) { ctx.beginPath(); ctx.arc(x + w * (0.25 + 0.25 * s), y + h - 6, 1.6, 0, 7); ctx.fill(); }
+    }
+    ctx.restore();
 
-    this.flag.x = centerX;
-    this.flag.y = topY;
+    // borde siguiendo el perfil erosionado
+    ctx.save();
+    ctx.strokeStyle = pal.border;
+    ctx.lineWidth = solidity >= 0.7 ? 2.2 : 1.3;
+    ctx.globalAlpha = 0.45 + 0.55 * solidity;
+    if (solidity < 0.4) ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x, y + h); ctx.lineTo(x, topY(0));
+    for (let i = 0; i <= NOTCHES; i++) ctx.lineTo(x + (w * i) / NOTCHES, topY(i));
+    ctx.lineTo(x + w, y + h);
+    ctx.stroke();
+    ctx.restore();
 
-    if (allBuilt && !this.flag.visible) {
-      this.flag.visible = true;
-      this.flag.scale.set(0.2);
-      this.flag.alpha = 0;
-      this._animateFlagIn();
-    } else if (!allBuilt) {
-      this.flag.visible = false;
+    // etiqueta en la zona solida
+    if (label) {
+      const solidTop = y + amp + 2;
+      ctx.save();
+      ctx.font = "700 " + Math.max(10, Math.min(13, Math.floor(h * 0.26))) + "px Inter, sans-serif";
+      ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      ctx.lineWidth = 2.5; ctx.strokeStyle = "rgba(255,243,214,0.9)";
+      ctx.fillStyle = "#3A2A10";
+      const lbl = label.length > 22 ? label.slice(0, 21) + "…" : label;
+      const ly = solidTop + (y + h - solidTop) / 2;
+      ctx.strokeText(lbl, x + w / 2, ly);
+      ctx.fillText(lbl, x + w / 2, ly);
+      ctx.restore();
     }
   }
 
-  _animateFlagIn() {
-    const start = performance.now();
-    const duration = 500;
-    const tick = () => {
-      const t = Math.min(1, (performance.now() - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      this.flag.alpha = eased;
-      this.flag.scale.set(0.2 + 0.8 * eased);
-      if (t >= 1) {
-        this.app.ticker.remove(tick);
-        this._startFlagWave();
-      }
-    };
-    this.app.ticker.add(tick);
+  _drawParticles(ctx) {
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      if (p.rect) ctx.fillRect(p.x, p.y, 1.6, 2.6);
+      else { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill(); }
+    }
+    ctx.globalAlpha = 1;
   }
 
-  _startFlagWave() {
-    if (this.flagWaveStarted) return;
-    this.flagWaveStarted = true;
-    this.app.ticker.add(() => {
-      if (!this.flag || !this.flag.visible) return;
-      const cloth = this.flag.getChildByName("cloth");
-      if (cloth) cloth.skew.y = Math.sin(performance.now() / 260) * 0.18;
-    });
+  _drawFlag(ctx, now) {
+    if (!this.flag || this.builtCount < this.missions.length) return;
+    const topY = this._floorTopY(this.missions.length - 1);
+    const cx = this.width / 2;
+    const t = Math.min(1, (now - this.flag.start) / 500);
+    const grow = 0.2 + 0.8 * (1 - Math.pow(1 - t, 3));
+    ctx.save();
+    ctx.translate(cx, topY);
+    ctx.scale(grow, grow);
+    ctx.globalAlpha = 1 - Math.pow(1 - t, 3);
+    ctx.strokeStyle = "#D9DEE8"; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -22); ctx.stroke();
+    const wave = Math.sin(now / 260) * 3;
+    ctx.fillStyle = "#0070F2";
+    ctx.beginPath();
+    ctx.moveTo(0, -22); ctx.lineTo(16, -18 + wave); ctx.lineTo(0, -14); ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+    ctx.globalAlpha = 1;
   }
 
-  /* ---------- partículas doradas ---------- */
+  /* ---------- particulas ---------- */
 
-  _spawnGoldParticles(cx, cy) {
-    const count = 14;
+  _spawnSandPuff(cx, cy, solidity) {
+    const count = Math.round(10 + (1 - solidity) * 18);
+    const tone = solidity >= 0.7 ? "#E9CE93" : solidity >= 0.4 ? "#CEBB93" : "#B8A77F";
+    const now = (typeof performance !== "undefined" ? performance.now() : Date.now());
     for (let i = 0; i < count; i++) {
-      const p = new PIXI.Graphics();
-      const r = 2 + Math.random() * 2.5;
-      p.beginFill(0xE8B84B, 0.95);
-      p.drawCircle(0, 0, r);
-      p.endFill();
-      p.x = cx;
-      p.y = cy;
+      const angle = -Math.PI / 2 + (Math.random() - 0.5) * Math.PI * 1.1;
+      const speed = 0.5 + Math.random() * 1.5;
+      this.particles.push({
+        x: cx + (Math.random() - 0.5) * 40, y: cy - Math.random() * 4,
+        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+        grav: 0.05, r: 1 + Math.random() * 2.2, color: tone, alpha: 1,
+        birth: now, maxLife: 500 + Math.random() * 500
+      });
+    }
+  }
+
+  _spawnGold(cx, cy) {
+    const now = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    for (let i = 0; i < 14; i++) {
       const angle = Math.random() * Math.PI * 2;
       const speed = 0.8 + Math.random() * 1.6;
-      p.vx = Math.cos(angle) * speed;
-      p.vy = Math.sin(angle) * speed - 1.2;
-      p.birth = performance.now();
-      p.maxLife = 700 + Math.random() * 400;
-      this.particleLayer.addChild(p);
-      this.particles.push(p);
+      this.particles.push({
+        x: cx, y: cy, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed - 1.2,
+        grav: 0.03, r: 2 + Math.random() * 2.5, color: "#E8B84B", alpha: 1,
+        birth: now, maxLife: 700 + Math.random() * 400
+      });
     }
   }
 
-  _tickParticles() {
-    if (!this.particles.length) return;
-    const now = performance.now();
-    for (let i = this.particles.length - 1; i >= 0; i--) {
-      const p = this.particles[i];
-      const age = now - p.birth;
-      if (age >= p.maxLife) {
-        this.particleLayer.removeChild(p);
-        p.destroy();
-        this.particles.splice(i, 1);
-        continue;
-      }
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.03;
-      p.alpha = 1 - age / p.maxLife;
-    }
+  _spawnTrickle(idx) {
+    if (!this.geometry) return;
+    const fw = this._floorWidth(idx);
+    const x = (this.width - fw) / 2;
+    const y = this._floorTopY(idx) + this.geometry.floorH - 3;
+    const now = (typeof performance !== "undefined" ? performance.now() : Date.now());
+    this.particles.push({
+      x: x + 6 + Math.random() * (fw - 12), y: y,
+      vx: (Math.random() - 0.5) * 0.2, vy: 0.3 + Math.random() * 0.4,
+      grav: 0.05, rect: true, color: "#B8A87E", alpha: 1,
+      birth: now, maxLife: 700 + Math.random() * 500
+    });
   }
 }
 
 TowerRenderer = new TowerRenderer();
-window.TowerRenderer = TowerRenderer;
+if (typeof window !== "undefined") window.TowerRenderer = TowerRenderer;
+if (typeof module !== "undefined" && module.exports) module.exports = { TowerRenderer, sandPalette, buildTopEdge, seededRng };

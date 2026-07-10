@@ -1,7 +1,7 @@
 {
   "gameConfig": {
     "title": "HR AI Tower",
-    "subtitle": "Construye una organización resiliente con SAP Business AI en SuccessFactors",
+    "subtitle": "Construye tu torre de arena con SAP Business AI en SuccessFactors",
     "scoringWeights": {
       "value": 0.40,
       "time": 0.25,
@@ -24,55 +24,47 @@
     {
       "id": "rec",
       "floorName": "Reclutamiento",
-      "missionTitle": "El Tsunami de CVs",
-      "brief": "Una empresa de servicios financieros necesita contratar 85 personas en 90 días para una nueva línea de negocio. El equipo de recruiting tiene 4 personas. Hay 12 posiciones críticas abiertas desde hace 72 días, el pipeline cubre solo el 31% de la demanda, 14 empleados internos compatibles que nadie ha contactado, y 9 descripciones de puesto pendientes de publicación. La Head de Talent Acquisition debe presentar un plan antes del viernes.",
-      "tooltip": "Joule genera descripciones de puesto en minutos. El Candidate Skills AI ordena candidatos por compatibilidad real de habilidades del TIH. El Opportunity Marketplace detecta y activa talento interno automáticamente.",
-      "jouleTip": "Piensa en cuánto tiempo tarda tu equipo hoy en revisar CVs manualmente. ¿Qué pasaría si pudiera enfocarse solo en los 20 mejores perfiles de cada vacante?",
-      "unexpectedEvent": {
-        "emoji": "🏃",
-        "title": "La Oferta de la Competencia",
-        "description": "Un candidato interno con 92% de compatibilidad recibe una oferta externa. Tiene 48 horas para decidir.",
-        "outcomeIfNative": "El sistema ya le había enviado una invitación personalizada hace 3 días basada en su perfil de habilidades. Acepta la oportunidad interna. Bonus: +1 Integración, +1 Confianza.",
-        "outcomeIfOther": "Nadie sabía que ese empleado encajaba con la vacante. Se entera por un compañero cuando ya firmó con la competencia. Sin bonus."
-      },
+      "missionTitle": "La Temporada de Pesca",
+      "brief": "OceanAI Inc abre una nueva ruta de pesca y necesita fichar 30 marineros en 30 días, o pierde la temporada.",
+      "jouleTip": "Activa ranking automático por habilidades y movilidad interna desde el día uno; publica rápido, pero decide solo con listas priorizadas y alertas a candidatos internos ya listos.",
       "options": [
         {
           "type": "external",
-          "label": "ATS externo especializado conectado por API",
+          "label": "El Faro escribe las fichas de puesto en un día",
           "bullets": [
-            "Despliegue en días con paneles visuales modernos y experiencia de candidato ágil",
-            "IA de filtrado rápido que puntúa CVs con sus propios algoritmos",
-            "Configuración independiente: el equipo de recruiting controla el proceso sin depender de TI",
-            "Requiere sincronización manual con el sistema central de empleados"
+            "El Faro genera las descripciones de puesto rápidamente",
+            "Las solicitudes se revisan una por una, sin ranking ni priorización",
+            "Se publica rápido pero sin filtro inteligente de candidatos"
           ],
+          "result": "Publican rápido, pero se ahogan en solicitudes. Cubren poco más de la mitad de los puestos.",
           "value": 4,
           "risk": 55,
           "stability": 50,
-          "resources": { "productivity": 3, "integration": 1 }
+          "resources": { "productivity": 3, "innovation": 1 }
         },
         {
           "type": "native",
-          "label": "Joule + SuccessFactors Recruiting + Talent Intelligence Hub",
+          "label": "El Faro + El Arrecife + La Corriente trabajan juntos",
           "bullets": [
-            "Genera las 12 descripciones de puesto en horas usando el catálogo de skills como base",
-            "Ranking de candidatos explicado por compatibilidad real de habilidades, no solo palabras clave",
-            "Detecta automáticamente a los 14 empleados internos compatibles y los invita a postularse",
-            "Entrevistas estructuradas por competencia generadas para cada vacante"
+            "El Faro y el Arrecife arman las fichas y ordenan candidatos por habilidad real",
+            "La Corriente avisa directo a los tripulantes internos que calzan con el puesto",
+            "Ranking automático por compatibilidad real de habilidades"
           ],
+          "result": "Cubren más del 90% de los puestos en 48 horas. El barco zarpa a tiempo.",
           "value": 8,
           "risk": 100,
           "stability": 85,
-          "resources": { "integration": 3, "trust": 3, "productivity": 2 }
+          "resources": { "trust": 4, "productivity": 2, "innovation": 2 }
         },
         {
           "type": "manual",
-          "label": "Plantillas Word + Excel de seguimiento + coordinación por correo",
+          "label": "Fichas de puesto a mano y esperar solicitudes",
           "bullets": [
-            "Cero coste adicional y arranque inmediato sin dependencia tecnológica",
-            "Control total sobre el lenguaje y el tono de cada descripción de puesto",
-            "Cada recruiter aplica su propio criterio de evaluación sin restricciones del sistema",
-            "Flexibilidad para adaptar el proceso a cada vacante de forma individual"
+            "Escriben las fichas de puesto a mano sin asistencia",
+            "Revisan todo sin ningún orden ni ayuda",
+            "Dependen de que los candidatos lleguen solos"
           ],
+          "result": "Solo cubren el 40% de los puestos a tiempo. El barco pierde marineros valiosos frente a otras flotas.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -83,41 +75,33 @@
     {
       "id": "onb",
       "floorName": "Onboarding",
-      "missionTitle": "La Bienvenida que Nadie Preparó",
-      "brief": "Una empresa de logística contrata entre 80 y 120 personas al mes. La rotación antes del día 90 es del 31% y cada salida temprana cuesta 4.200€. El 38% de los nuevos no completó las tareas obligatorias, el buzón de RR.HH. recibe 847 correos con preguntas básicas (tiempo de respuesta: 3,2 días), y el 67% de quienes abandonaron declararon que 'no supieron qué se esperaba de ellos en las primeras semanas'.",
-      "tooltip": "Los Journeys personalizados del TIH cruzan habilidades actuales vs. requeridas y asignan cursos por brechas reales. Joule responde 24/7 en el idioma del empleado. Las notificaciones proactivas al manager detectan bloqueos antes de que sean irreversibles.",
-      "jouleTip": "El 67% de quienes abandonaron dijeron que no sabían qué se esperaba de ellos. ¿Qué herramienta podría darles claridad desde el primer día en su idioma?",
-      "unexpectedEvent": {
-        "emoji": "⚖️",
-        "title": "Regulación Relámpago",
-        "description": "El regulador exige que todos los empleados de los últimos 60 días completen una certificación de protección de datos antes del viernes.",
-        "outcomeIfNative": "El sistema identifica automáticamente a los 23 afectados, asigna el curso con fecha límite y notifica a cada uno en su idioma. Cumplimiento al 100%. Bonus: +1 Gobernanza, +1 Experiencia.",
-        "outcomeIfOther": "El HRBP cruza listas en Excel para identificar quién necesita el curso. Solo el 61% lo completa a tiempo. Sin bonus."
-      },
+      "missionTitle": "Tripulantes al Agua",
+      "brief": "OceanAI Inc suma 100 tripulantes nuevos al mes, pero muchos abandonan el barco antes de los tres meses.",
+      "jouleTip": "Asigna una ruta personalizada por rol con hitos medibles y nudges diarios; mantén un radar de riesgo temprano y dispara acciones del manager antes del primer mes.",
       "options": [
         {
           "type": "native",
-          "label": "SuccessFactors Onboarding + Joule + TIH + Learning",
+          "label": "Ruta personalizada + El Faro 24/7 + El Sonar",
           "bullets": [
-            "Journey personalizado se activa automáticamente al firmar la oferta según puesto, país y skills",
-            "Cruza brechas de habilidades reales y asigna cursos priorizados con fecha límite",
-            "Asistente disponible 24/7 que responde políticas y completa tareas desde el chat",
-            "Alertas proactivas al manager si una tarea crítica lleva más de 48h sin completarse"
+            "Cada tripulante recibe una ruta personalizada desde el día uno",
+            "El Faro guía a cada nuevo tripulante a toda hora",
+            "El Sonar avisa a tiempo si alguien muestra señales de irse"
           ],
+          "result": "El abandono cae fuerte. Los jefes de cubierta actúan antes de perder gente.",
           "value": 8,
           "risk": 100,
           "stability": 85,
-          "resources": { "integration": 3, "experience": 3, "governance": 2 }
+          "resources": { "trust": 4, "innovation": 3, "productivity": 1 }
         },
         {
           "type": "manual",
-          "label": "Checklist por correo + PDF de bienvenida + reunión estándar para todos",
+          "label": "Misma lista de tareas para todos + dudas por carta",
           "bullets": [
-            "Sin inversión adicional ni dependencia de configuración técnica",
-            "El equipo de RR.HH. mantiene control directo sobre el contenido de bienvenida",
-            "Cada manager puede personalizar la experiencia con su propio estilo y criterio",
-            "Proceso probado durante años que el equipo conoce y domina"
+            "Mandan la misma lista de tareas a todos, sin importar el puesto",
+            "Las dudas se resuelven solo por carta, con días de espera",
+            "Sin seguimiento ni alertas de progreso"
           ],
+          "result": "Nadie sabe qué es prioridad. El abandono casi no baja.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -125,131 +109,166 @@
         },
         {
           "type": "external",
-          "label": "Plataforma de onboarding externa especializada vía API",
+          "label": "Rutas distintas por puesto + El Faro para dudas",
           "bullets": [
-            "Experiencia visual moderna: vídeos de bienvenida, timelines interactivos y push notifications",
-            "Implementación rápida sin necesidad de configuración profunda en el sistema central",
-            "Plantillas prediseñadas por industria que aceleran el primer despliegue",
-            "El empleado interactúa con una interfaz dedicada exclusivamente al onboarding"
+            "Crean rutas distintas según el puesto del tripulante",
+            "El Faro responde dudas rápidas del día a día",
+            "Nadie avisa si algo se atrasa o alguien está en riesgo"
           ],
+          "result": "Mejora la experiencia, pero el abandono baja poco.",
           "value": 4,
           "risk": 55,
           "stability": 50,
-          "resources": { "productivity": 3, "experience": 1 }
+          "resources": { "productivity": 3, "innovation": 1 }
         }
       ]
     },
     {
       "id": "ges",
-      "floorName": "Gestión de Personal",
-      "missionTitle": "El Laberinto de los Cambios",
-      "brief": "Una empresa del sector energético con 7.100 empleados en 4 países enfrenta tres amenazas simultáneas: 387 solicitudes de cambio pendientes (espera media: 4,1 días), tasa de errores en datos maestros del 9,3% que impactará el cierre de nómina, y 4 empleados dados de baja cuyos accesos a sistemas siguen activos tras 3,8 días de retraso. People Intelligence detecta además 47 empleados con riesgo de abandono del 74%.",
-      "tooltip": "Joule permite autoservicio conversacional y aprobaciones desde el chat. AI-assisted central governance (J535) detecta errores en datos maestros antes de que impacten nómina. El Journey de offboarding revoca accesos automáticamente al registrar la baja.",
-      "jouleTip": "387 solicitudes esperan en promedio 4,1 días para una aprobación. ¿Y si esas aprobaciones pudieran resolverse conversando, y los errores en los datos se detectaran antes de llegar a nómina en vez de después?",
-      "unexpectedEvent": {
-        "emoji": "🔓",
-        "title": "Acceso Fantasma",
-        "description": "Ciberseguridad detecta un inicio de sesión sospechoso con credenciales de un empleado que salió hace 11 días.",
-        "outcomeIfNative": "Los accesos se revocaron automáticamente 2 horas después de registrar la baja. Las credenciales ya estaban desactivadas: falso positivo confirmado. Bonus: +2 Gobernanza.",
-        "outcomeIfOther": "El acceso seguía activo porque la notificación a TI nunca llegó a tiempo. Incidente de seguridad real. El CISO escala al Board. Sin bonus."
-      },
+      "floorName": "Gestión del Personal",
+      "missionTitle": "Solicitudes a la Deriva",
+      "brief": "En OceanAI Inc se acumulan solicitudes sin resolver, hay errores en el registro de la tripulación, y los accesos no se cierran a tiempo cuando alguien desembarca.",
+      "jouleTip": "Automatiza autoservicio de punta a punta y prioriza casos por impacto real; combina cierres de acceso por evento con playbooks de retención solo para riesgo validado por datos.",
       "options": [
         {
           "type": "manual",
-          "label": "Formularios PDF + correo electrónico + Excel de seguimiento",
+          "label": "Procesar todo a mano el fin de semana",
           "bullets": [
-            "Control absoluto sobre cada transacción: nada se procesa sin revisión humana",
-            "Sin riesgo de errores automatizados: cada dato lo verifica una persona",
-            "Cero dependencia tecnológica: funciona aunque el sistema esté caído",
-            "El equipo conoce el proceso de memoria y puede capacitar fácilmente a nuevos miembros"
+            "Procesan todo a mano, el fin de semana, a ojo",
+            "No hacen nada con el grupo que el Sonar marcó en riesgo",
+            "Sin priorización ni automatización de ningún tipo"
           ],
+          "result": "Se cometen nuevos errores por el cansancio. Varios tripulantes en riesgo terminan yéndose.",
           "value": 1,
           "risk": 20,
           "stability": 20,
           "resources": {}
         },
         {
-          "type": "external",
-          "label": "Plataforma de HR Service Delivery externa conectada por API",
+          "type": "native",
+          "label": "Autoservicio total + El Arrecife + El Sonar",
           "bullets": [
-            "Portal de servicios moderno con catálogo de casos y flujos de aprobación maduros",
-            "Agente virtual que responde preguntas frecuentes de empleados con buena experiencia",
-            "Gestión de tickets profesional con SLAs, escalamientos y métricas de servicio",
-            "El equipo de RR.HH. obtiene reportes detallados de volumen y tiempo de resolución"
+            "El autoservicio resuelve todo en minutos sin intervención humana",
+            "El Arrecife prioriza los errores por impacto real en la operación",
+            "El Sonar detecta quién está en riesgo y sugiere una acción concreta"
           ],
+          "result": "Cero solicitudes pendientes en dos semanas. Los accesos se cierran solos. El equipo se convierte en el mejor de la flota.",
+          "value": 8,
+          "risk": 100,
+          "stability": 85,
+          "resources": { "trust": 4, "productivity": 2, "innovation": 2 }
+        },
+        {
+          "type": "external",
+          "label": "Autoservicio para cambios simples + lo demás a mano",
+          "bullets": [
+            "Activan el autoservicio solo para cambios simples",
+            "Los errores y accesos se siguen resolviendo a mano",
+            "Los casos se atienden en orden de llegada, no por urgencia"
+          ],
+          "result": "Baja la carga, pero los casos urgentes quedan al final y generan problemas de pago.",
           "value": 4,
           "risk": 55,
           "stability": 50,
           "resources": { "productivity": 3, "trust": 1 }
-        },
-        {
-          "type": "native",
-          "label": "Joule + Employee Central + People Intelligence + Offboarding automático",
-          "bullets": [
-            "Autoservicio conversacional 24/7: cambios, consultas y aprobaciones directamente desde el chat",
-            "Gobernanza central asistida por IA prioriza errores por impacto en nómina y compliance",
-            "Al registrar una baja, el offboarding se activa en segundos y revoca accesos sin intervención",
-            "Detección predictiva de riesgo de abandono con acciones diferenciadas por empleado"
-          ],
-          "value": 8,
-          "risk": 100,
-          "stability": 85,
-          "resources": { "governance": 3, "trust": 2, "integration": 2, "productivity": 2 }
         }
       ]
     },
     {
       "id": "nom",
       "floorName": "Nómina",
-      "missionTitle": "El Error que Nadie Ve Venir",
-      "brief": "Una empresa de manufactura con 14.000 empleados cierra su nómina quincenal con 11 especialistas en 9 días hábiles. En el último año: tres reprocesos parciales por errores no detectados (tablas fiscales sin actualizar, horas extras duplicadas, retroactivos mal aplicados). Recibe entre 200 y 300 consultas por quincena que tardan 4 días en responderse. Las reglas de validación llevan 14 meses sin actualizar porque la única persona que sabe hacerlo cubre dos vacantes.",
-      "tooltip": "El Payroll Control Center Rule Assistant (J1372) permite crear reglas de validación en lenguaje natural y probarlas en simulación. El Payroll Explanation Agent (J910) resuelve consultas de empleados en segundos con explicaciones personalizadas de cada línea del recibo.",
-      "jouleTip": "Si la única persona que sabe actualizar las reglas de validación cubre dos vacantes, ¿qué pasa el día que no está? ¿Podrías crear y probar esas reglas sin escribir una sola línea de código?",
-      "unexpectedEvent": {
-        "emoji": "📋",
-        "title": "El Cambio Fiscal de Medianoche",
-        "description": "El gobierno publica un cambio en las tablas fiscales que afecta a 400 empleados y entra en vigor antes del próximo cierre de nómina.",
-        "outcomeIfNative": "Se crea una regla de detección en lenguaje natural, se valida en simulación sobre los registros afectados y se activa antes del cálculo. Cero empleados impactados. Bonus: +1 Gobernanza, +1 Confianza.",
-        "outcomeIfOther": "Nadie detecta el cambio a tiempo. 400 nóminas salen con el cálculo incorrecto. Reproceso de 4 días y reclamaciones ante la autoridad laboral. Sin bonus."
-      },
+      "missionTitle": "La Paga de la Tripulación",
+      "brief": "OceanAI Inc cierra su nómina en 9 días a mano. El año pasado: 3 reprocesos, una semana perdida cada uno, reclamos formales. Hoy, 250 tripulantes esperan respuesta sobre su paga.",
+      "jouleTip": "Un error que se repite no es mala suerte, es una regla que falta.",
       "options": [
         {
-          "type": "native",
-          "label": "Payroll Control Center + Rule Assistant + Payroll Explanation Agent",
-          "bullets": [
-            "Crea reglas de validación describiendo la condición en lenguaje natural, sin código",
-            "Simula el impacto de cualquier cambio sobre datos reales antes de activarlo en producción",
-            "Los empleados consultan su recibo y reciben explicaciones personalizadas en segundos",
-            "Prioriza los casos atípicos por nivel de riesgo real, no por orden de llegada"
-          ],
-          "value": 8,
-          "risk": 100,
-          "stability": 85,
-          "resources": { "governance": 3, "trust": 3, "productivity": 2 }
-        },
-        {
           "type": "external",
-          "label": "Bot de autoservicio externo + motor de reglas independiente",
+          "label": "El Vigía ordena los casos por riesgo",
           "bullets": [
-            "Respuestas rápidas a preguntas frecuentes sin modificar el sistema de nómina",
-            "Motor de reglas visual con interfaz intuitiva para el equipo de nómina",
-            "Despliegue independiente que no requiere aprobación del equipo de infraestructura",
-            "Dashboard propio con métricas de uso y satisfacción del empleado"
+            "El Vigía prioriza y ordena los casos por nivel de riesgo",
+            "Corrigen los más obvios primero con el equipo disponible",
+            "Aprueban el cambio fiscal sin simulación previa"
           ],
+          "result": "Los casos principales limpios, pero 210 nóminas afectadas sin revisión.",
           "value": 4,
           "risk": 55,
           "stability": 50,
-          "resources": { "productivity": 3, "governance": 1 }
+          "resources": { "productivity": 3, "trust": 1 }
         },
         {
           "type": "manual",
-          "label": "Revisión manual en Excel + aprobación por excepción + respuesta por correo",
+          "label": "Revisión manual completa + aprobación por excepción",
           "bullets": [
-            "El especialista revisa personalmente cada caso atípico con criterio experto",
-            "Decisiones basadas en experiencia: el equipo conoce los patrones de error por memoria",
-            "Sin riesgo de que una regla mal configurada genere alertas masivas falsas",
-            "Las excepciones se documentan con notas detalladas del contexto de cada caso"
+            "Revisan todo a mano caso por caso sin herramientas",
+            "Aprueban por excepción lo que no alcanza a revisarse",
+            "Responden dudas de tripulantes cuatro días después"
           ],
+          "result": "180 pagos mal calculados, reproceso de 4 días, equipo agotado.",
+          "value": 1,
+          "risk": 20,
+          "stability": 20,
+          "resources": {}
+        },
+        {
+          "type": "native",
+          "label": "El Cartógrafo + El Vigía + El Faro en conjunto",
+          "bullets": [
+            "El Cartógrafo crea y activa la regla fiscal antes del cierre",
+            "El Vigía prioriza los 847 casos pendientes por impacto",
+            "El Faro resuelve las 250 dudas sin tocar al equipo de nómina"
+          ],
+          "result": "Nómina limpia, consultas resueltas en minutos, reglas actualizadas para siempre.",
+          "value": 8,
+          "risk": 100,
+          "stability": 85,
+          "resources": { "trust": 4, "productivity": 2, "innovation": 2 }
+        }
+      ]
+    },
+    {
+      "id": "comp",
+      "floorName": "Compensación",
+      "missionTitle": "La Brecha del Tesoro",
+      "brief": "47 capitanes deciden aumentos con un Excel semanal, sin ver desempeño ni equidad. El año pasado: el 19% de las marineras por debajo del mínimo de banda. El hallazgo llegó cuando los contratos ya estaban firmados.",
+      "jouleTip": "Un capitán que no sabe si paga justo no puede tomar buenas decisiones. Los datos tienen que llegar antes de que firme, no después.",
+      "options": [
+        {
+          "type": "native",
+          "label": "La Brújula + El Faro + El Pergamino + El Sonar",
+          "bullets": [
+            "La Brújula muestra a cada capitán solo la equidad de su equipo",
+            "El Faro genera los argumentos para comunicar cada decisión",
+            "El Pergamino documenta el viaje de cada marinero y El Sonar simula escenarios"
+          ],
+          "result": "Ciclo en 6 semanas. Brecha cae al 4%. Cero bajas en alto desempeño.",
+          "value": 8,
+          "risk": 100,
+          "stability": 85,
+          "resources": { "trust": 4, "innovation": 2, "productivity": 2 }
+        },
+        {
+          "type": "external",
+          "label": "La Brújula identifica casos críticos y manda la lista",
+          "bullets": [
+            "La Brújula detecta los casos más críticos de inequidad",
+            "Manda la lista a los capitanes sin explicar el por qué",
+            "Sin argumentos ni simulación de impacto"
+          ],
+          "result": "La brecha baja al 11%, pero el 40% de los capitanes ignora las recomendaciones.",
+          "value": 4,
+          "risk": 55,
+          "stability": 50,
+          "resources": { "productivity": 3, "trust": 1 }
+        },
+        {
+          "type": "manual",
+          "label": "El Excel de siempre sin datos de equidad",
+          "bullets": [
+            "El Excel de siempre sin datos de desempeño ni equidad",
+            "Solo se revisan los casos extremos al final del ciclo",
+            "Cada capitán decide con su criterio sin información objetiva"
+          ],
+          "result": "La brecha se mantiene en 17%. Tres marineros clave se van. La auditoría encuentra lo mismo.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -260,86 +279,84 @@
     {
       "id": "des",
       "floorName": "Desempeño",
-      "missionTitle": "La Evaluación que Nadie Toma en Serio",
-      "brief": "Una empresa de telecomunicaciones con 11.500 empleados tiene un problema sistémico: el 61% llega a noviembre sin una conversación de desempeño con su manager, las revisiones de mitad de año se completaron al 38%, y la evaluación promedio dura 22 minutos y siempre dice lo mismo. En la encuesta de clima, el 54% dijo que la evaluación no refleja su trabajo real. La calibración es negociación de cuotas sin datos. Empleados de alto potencial se van sin que nadie haya visto la señal.",
-      "tooltip": "AI-assisted goal creation (J38) genera objetivos SMART en segundos. Employee Career Narrative (J1466) sintetiza logros, feedback y progreso en skills como base objetiva para la conversación. People Intelligence detecta sesgos y patrones atípicos antes de la calibración.",
-      "jouleTip": "Una evaluación de 22 minutos que siempre dice lo mismo no está midiendo nada real. ¿Qué pasaría si cada manager llegara a la conversación con un resumen objetivo del progreso real de su colaborador, generado automáticamente?",
-      "unexpectedEvent": {
-        "emoji": "🚪",
-        "title": "La Renuncia Silenciosa",
-        "description": "Un empleado de alto potencial que llevaba 14 meses sin feedback formal presenta su renuncia. Su manager dice: 'No vi ninguna señal.'",
-        "outcomeIfNative": "El sistema había detectado las señales hace 6 semanas (sin progreso en metas, sin conversaciones, feedback decreciente) y alertó al HRBP. Se intervino a tiempo. Bonus: +1 Confianza, +1 Productividad.",
-        "outcomeIfOther": "Sin señales predictivas, la renuncia es una sorpresa total. El equipo pierde 3 meses buscando reemplazo externo. Sin bonus."
-      },
+      "missionTitle": "La Evaluación Fantasma",
+      "brief": "El 61% de la tripulación llega a noviembre sin una sola conversación con su capitán. La evaluación dura 22 minutos y siempre dice lo mismo. La calibración es una negociación de cuotas: gana quien habla más fuerte.",
+      "jouleTip": "Una evaluación sin evidencia no es una evaluación, es una opinión. Y las opiniones no sostienen una calibración.",
       "options": [
         {
-          "type": "external",
-          "label": "Plataforma de OKR y desempeño externa especializada",
-          "bullets": [
-            "Interfaz moderna diseñada específicamente para OKRs, check-ins y feedback social",
-            "Los empleados adoptan la herramienta fácilmente por su experiencia de usuario intuitiva",
-            "Feedback continuo con notificaciones push y recordatorios inteligentes",
-            "Reportes visuales de progreso que los managers pueden compartir en reuniones"
-          ],
-          "value": 4,
-          "risk": 55,
-          "stability": 50,
-          "resources": { "productivity": 3, "experience": 1 }
-        },
-        {
           "type": "manual",
-          "label": "Plantillas Word + correo de recordatorio + calibración presencial",
+          "label": "Un correo + guía en PDF + esperar formularios",
           "bullets": [
-            "Los managers tienen libertad total para adaptar el formato a su estilo de liderazgo",
-            "Las conversaciones de desempeño son genuinamente personales, no guiadas por un sistema",
-            "La calibración presencial permite debate profundo y matices que un algoritmo no captura",
-            "Sin curva de aprendizaje: todos saben usar Word y correo electrónico"
+            "Envían un correo con una guía en PDF a todos los capitanes",
+            "Esperan a que lleguen los formularios completados",
+            "Sin seguimiento, sin evidencia, sin recordatorios"
           ],
+          "result": "Evaluaciones completas al 71%, el 68% genérico. Tres marineros de alto potencial se van en Q1.",
           "value": 1,
           "risk": 20,
           "stability": 20,
           "resources": {}
         },
         {
-          "type": "native",
-          "label": "IA generativa + Joule + Performance & Goals + People Intelligence",
+          "type": "external",
+          "label": "El Faro mejora comentarios pero sin metas actualizadas",
           "bullets": [
-            "Genera objetivos SMART por rol, seniority y métricas de negocio en segundos",
-            "Sintetiza el año del empleado (logros, feedback, skills) como base objetiva para la evaluación",
-            "Resúmenes 360 accionables que detectan sesgos y patrones de calificación atípicos",
-            "Alerta de empleados en riesgo de rotación antes de que presenten la renuncia"
+            "El Faro mejora la redacción de los comentarios de evaluación",
+            "Las metas siguen siendo las de enero sin actualizar",
+            "El feedback de 360 llega sin orientación ni contexto"
           ],
+          "result": "Mejor en forma, no en fondo. 180 casos sin evidencia en calibración.",
+          "value": 4,
+          "risk": 55,
+          "stability": 50,
+          "resources": { "productivity": 3, "innovation": 1 }
+        },
+        {
+          "type": "native",
+          "label": "El Sonar + El Pergamino + El Faro + El Sextante",
+          "bullets": [
+            "El Sonar detecta evaluaciones genéricas y alerta",
+            "El Pergamino resume el año completo de cada marinero con evidencia real",
+            "El Faro hace el feedback accionable y El Sextante fija metas reales"
+          ],
+          "result": "Evaluaciones al 94%, calibración en medio día, dos talentos clave rescatados.",
           "value": 8,
           "risk": 100,
           "stability": 85,
-          "resources": { "trust": 3, "experience": 2, "governance": 2, "productivity": 2 }
+          "resources": { "trust": 4, "innovation": 2, "productivity": 2 }
         }
       ]
     },
     {
-      "id": "comp",
-      "floorName": "Compensación",
-      "missionTitle": "El Ciclo que Dura Cuatro Meses",
-      "brief": "Una empresa de servicios financieros con 6.200 empleados tarda cuatro meses en cerrar su ciclo de merit review: 47 managers toman decisiones con un Excel que RR.HH. distribuye por correo, sin conectar la calificación de desempeño a la propuesta de aumento. En la última auditoría de equidad salarial, el 19% de las mujeres en roles senior estaban por debajo del percentil 25 frente al 6% de sus pares masculinos. Las correcciones se hicieron con presupuesto de emergencia, sin explicación posible. El ciclo siguiente empieza igual.",
-      "tooltip": "El Pay Equity Agent (J1052) muestra a cada manager la situación de equidad de su propio equipo desde el inicio del ciclo. El People Intelligence Agent (J906) permite simular escenarios de distribución de presupuesto antes de comprometer ninguna decisión.",
-      "jouleTip": "Las brechas de equidad salarial se descubrieron en la auditoría, meses después de tomadas las decisiones. ¿Qué cambiaría si cada manager viera esa equidad desde el primer día del ciclo, en vez de al final?",
-      "unexpectedEvent": {
-        "emoji": "📊",
-        "title": "La Filtración del Excel",
-        "description": "Alguien reenvía por error el Excel de bandas salariales a todo el departamento. 200 personas ven los salarios de sus compañeros.",
-        "outcomeIfNative": "Cada decisión estaba documentada con evidencia de equidad y justificación objetiva. Los managers pueden explicar cada caso con datos. Tensión menor. Bonus: +1 Confianza, +1 Gobernanza.",
-        "outcomeIfOther": "No hay justificación documentada para las diferencias salariales. La percepción de inequidad se dispara. Tres empleados clave piden reunión urgente con RR.HH. Sin bonus."
-      },
+      "id": "suc",
+      "floorName": "Sucesión y Desarrollo",
+      "missionTitle": "El Capitán se Va",
+      "brief": "La directora de Ventas/Pesca de OceanAI Inc acaba de dar aviso de que se cambiará de empresa en 1 mes. Los HR managers ahora tienen que encontrar al mejor sucesor posible.",
+      "jouleTip": "No elijas al sucesor por cercanía. Usa datos reales de capacidades y ponlo a prueba antes de decidir.",
       "options": [
         {
-          "type": "manual",
-          "label": "Excel de bandas salariales + correo a managers + revisión al cierre",
+          "type": "external",
+          "label": "Validar con Joule a la candidata favorita de la directora",
           "bullets": [
-            "Los managers tienen autonomía total para decidir aumentos según su criterio y conocimiento",
-            "Flexibilidad para considerar factores cualitativos que ningún sistema captura",
-            "Sin dependencia de configuración técnica: el ciclo arranca cuando RR.HH. envía el archivo",
-            "Revisión humana de cada caso extremo garantiza que no hay decisiones automáticas erróneas"
+            "La directora recomienda a alguien de su equipo",
+            "Con Joule se valida si ese empleado tiene las capacidades necesarias",
+            "Se analizan brechas pero solo para un candidato"
           ],
+          "result": "La transición sale bien, pero los reclutadores solo conocen a un candidato. No se exploraron otras opciones.",
+          "value": 4,
+          "risk": 55,
+          "stability": 50,
+          "resources": { "productivity": 3, "trust": 1 }
+        },
+        {
+          "type": "manual",
+          "label": "Usar el módulo básico de Sucesión para recomendar 3 personas",
+          "bullets": [
+            "Se usa la funcionalidad básica del módulo de Sucesión y Desarrollo",
+            "El sistema recomienda a 3 personas sin IA ni análisis profundo",
+            "Después de 1 mes, los managers de RH escogen a una"
+          ],
+          "result": "El proceso es bueno, pero no es automatizado. Solo se usa el módulo normal de Sucesión y Desarrollo.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -347,72 +364,36 @@
         },
         {
           "type": "native",
-          "label": "Pay Equity Agent + People Intelligence + Career Narrative",
+          "label": "Joule analiza perfiles + prueba de 4 meses + monitoreo con IA",
           "bullets": [
-            "Cada manager ve la equidad de su equipo desde el inicio, no un reporte global al final",
-            "Genera puntos de conversación para que el manager comunique aumentos con evidencia",
-            "Simula escenarios de distribución del presupuesto antes de comprometer decisiones",
-            "Detecta brechas salariales por género, antigüedad y nivel antes de que escalen"
+            "Joule analiza los perfiles de varios empleados para encontrar al mejor",
+            "RH designa un director de prueba durante 4 meses",
+            "El agente de IA monitorea su desempeño real y registra avances y dificultades"
           ],
+          "result": "Probar antes de decidir reduce el riesgo de elegir mal. Gracias a Joule y People Analytics conocemos el desempeño real del nuevo director.",
           "value": 8,
           "risk": 100,
           "stability": 85,
-          "resources": { "trust": 3, "governance": 3, "experience": 2 }
-        },
-        {
-          "type": "external",
-          "label": "Herramienta de Total Rewards externa con IA de mercado",
-          "bullets": [
-            "Benchmarks salariales de mercado actualizados con datos de miles de empresas",
-            "Interfaz visual para que managers comparen posición competitiva de cada empleado",
-            "Alertas automáticas cuando un empleado está fuera de la banda de mercado",
-            "Reportes de equidad con visualizaciones que facilitan la presentación al Board"
-          ],
-          "value": 4,
-          "risk": 55,
-          "stability": 50,
-          "resources": { "productivity": 3, "trust": 1 }
+          "resources": { "trust": 4, "productivity": 2, "innovation": 2 }
         }
       ]
     },
     {
       "id": "cap",
       "floorName": "Capacitación",
-      "missionTitle": "La Directiva que No Puede Esperar",
-      "brief": "Una institución financiera con 6.000 empleados en 5 países recibe una nueva directiva regulatoria: 1.800 empleados de operaciones y back-office deben demostrar competencias digitales y de manejo de datos en 9 meses o la empresa no superará la auditoría. El catálogo de Learning tiene 2.400 cursos. El equipo de L&D tiene 4 personas. No pueden asignar cursos manualmente a 1.800 personas ni saben cuáles son relevantes para cada perfil. El reloj corre.",
-      "tooltip": "El TIH infiere habilidades de cada empleado y cruza con los requisitos regulatorios para generar rutas personalizadas. People Analytics correlaciona aprendizaje con KPIs operativos para eliminar cursos sin impacto real y reforzar a quienes no mejoran.",
-      "jouleTip": "Con 2.400 cursos disponibles y solo 4 personas en el equipo de L&D, ¿cómo sabrías cuál de esos cursos necesita cada una de las 1.800 personas sin revisarlas una por una?",
-      "unexpectedEvent": {
-        "emoji": "🔍",
-        "title": "La Auditoría Sorpresa",
-        "description": "El regulador anuncia una revisión anticipada: necesitan evidencia de certificaciones de los primeros 600 empleados en 48 horas.",
-        "outcomeIfNative": "El sistema genera automáticamente el reporte de completación con fechas, scores y certificados por empleado. Evidencia lista en 10 minutos. Bonus: +2 Gobernanza.",
-        "outcomeIfOther": "El equipo de L&D necesita 3 días para cruzar datos de múltiples fuentes y generar la evidencia manualmente. La auditoría se extiende. Sin bonus."
-      },
+      "missionTitle": "Cada Marinero al Timón",
+      "brief": "OceanAI Inc desea que los empleados sean dueños de su capacitación. El reto: que cada tripulante encuentre lo que necesita sin perderse en el mar de opciones.",
+      "jouleTip": "Recuerda que Joule tiene la capacidad de detectar las brechas de capacidades de cada empleado.",
       "options": [
         {
-          "type": "external",
-          "label": "LMS externo especializado con IA de recomendación propia",
-          "bullets": [
-            "Catálogo extenso con contenido de múltiples proveedores y formatos modernos (micro-learning, video)",
-            "IA de recomendación basada en patrones de uso y preferencias del empleado",
-            "Gamificación y badges que incentivan la completación de cursos",
-            "Experiencia de aprendizaje tipo Netflix que los empleados adoptan rápidamente"
-          ],
-          "value": 4,
-          "risk": 55,
-          "stability": 50,
-          "resources": { "productivity": 3, "experience": 1 }
-        },
-        {
           "type": "manual",
-          "label": "Asignación manual de cursos por el HRBP + seguimiento en Excel",
+          "label": "Partner presencial + managers de RH coordinan maestros",
           "bullets": [
-            "El HRBP conoce a su gente y puede recomendar cursos con contexto humano",
-            "Flexibilidad para priorizar formaciones urgentes sin depender de configuración del sistema",
-            "Posibilidad de combinar recursos formales e informales (cursos + shadowing + mentoría)",
-            "Sin riesgo de que un algoritmo asigne contenido irrelevante a empleados equivocados"
+            "OceanAI tiene un partner que ofrece maestros presenciales",
+            "Los empleados contactan a un manager de RH para solicitar cursos",
+            "El manager llama al maestro adecuado para los cursos más populares"
           ],
+          "result": "Sobrecarga de trabajo para los managers de RH, contactar a los maestros toma mucho tiempo. Los cursos no siempre son personalizados para todos los empleados.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -420,72 +401,27 @@
         },
         {
           "type": "native",
-          "label": "TIH + Learning + People Analytics + Joule",
+          "label": "Joule como asistente personal de capacitación para cada empleado",
           "bullets": [
-            "Infiere las habilidades actuales de cada empleado y cruza contra requisitos regulatorios",
-            "Genera rutas personalizadas que priorizan: primero compliance, luego herramientas del puesto",
-            "Correlaciona avance de aprendizaje con KPIs operativos para eliminar cursos sin impacto",
-            "El empleado pregunta a Joule qué aprender y por qué: recibe explicación contextualizada"
+            "OceanAI pone a disposición Joule, el asistente de IA de SAP",
+            "Cada empleado pregunta qué cursos son mejores según su rol y nivel",
+            "Joule detecta brechas y recomienda rutas personalizadas"
           ],
+          "result": "Los empleados con poca experiencia digital aún no usan Joule al máximo, pero quienes lo usan avanzan rápido con rutas personalizadas.",
           "value": 8,
           "risk": 100,
           "stability": 85,
-          "resources": { "governance": 3, "productivity": 2, "integration": 2, "experience": 1 }
-        }
-      ]
-    },
-    {
-      "id": "suc",
-      "floorName": "Sucesión",
-      "missionTitle": "Las Tres Sillas Vacías",
-      "brief": "Una empresa de servicios tecnológicos con 4.500 empleados detecta 3 posiciones de liderazgo con alto riesgo de vacante en 12 meses: un Director de Cloud Architecture (jubilación confirmada), un Head of Data & Analytics (ha recibido oferta de la competencia), y un Director Regional de Operaciones (ascenso inminente a COO global). No existen sucesores formalmente nominados para ninguna de las tres. La VP de Talento tiene 5 días para presentar un plan al Board.",
-      "tooltip": "Joule con TIH identifica sucesores potenciales en toda la compañía cruzando habilidades reales con requisitos del rol, incluyendo talento 'oculto' en áreas adyacentes. Dynamic Teams permite acelerar readiness con asignaciones reales antes de la transición.",
-      "jouleTip": "No hay sucesores nominados para ninguna de las tres posiciones. ¿Y si el candidato correcto ya trabaja en la empresa, con las habilidades adecuadas, pero en un área completamente distinta a la del puesto vacante?",
-      "unexpectedEvent": {
-        "emoji": "💼",
-        "title": "La Oferta Irrechazable",
-        "description": "El Head of Data & Analytics recibe una contraoferta de la competencia: 40% más de salario y reporte directo al CEO. Tiene una semana para decidir.",
-        "outcomeIfNative": "El sistema detectó el riesgo de fuga hace 2 meses. Ya se le ofreció una asignación alineada con sus aspiraciones vía Dynamic Teams. Decide quedarse. Bonus: +2 Confianza.",
-        "outcomeIfOther": "Nadie sabía que estaba en riesgo. La contraoferta que RR.HH. improvisa en 48 horas no convence. Se va sin sucesor preparado. Sin bonus."
-      },
-      "options": [
-        {
-          "type": "native",
-          "label": "HR Agent + Joule + TIH + Opportunity Marketplace + Dynamic Teams",
-          "bullets": [
-            "Identifica sucesores en toda la compañía cruzando habilidades reales, no solo antigüedad",
-            "Genera planes de desarrollo personalizados por brechas específicas de cada sucesor",
-            "Monitorea riesgo de fuga y ofrece asignaciones alineadas a aspiraciones antes de que sea tarde",
-            "Acelera readiness con proyectos reales y roles de liderazgo técnico vía Dynamic Teams"
-          ],
-          "value": 8,
-          "risk": 100,
-          "stability": 85,
-          "resources": { "trust": 3, "integration": 2, "productivity": 2, "innovation": 1 }
-        },
-        {
-          "type": "manual",
-          "label": "Reunión de HRBPs + revisión de hojas de cálculo + cursos estándar",
-          "bullets": [
-            "Los HRBPs conocen a las personas: su criterio captura matices que un sistema no ve",
-            "Conversaciones directas con los candidatos permiten evaluar motivación real",
-            "Flexibilidad para considerar candidatos no convencionales fuera de los datos del sistema",
-            "Asignación de formación adaptada al ritmo y preferencias de cada persona"
-          ],
-          "value": 1,
-          "risk": 20,
-          "stability": 20,
-          "resources": {}
+          "resources": { "trust": 3, "innovation": 3, "productivity": 2 }
         },
         {
           "type": "external",
-          "label": "Plataforma de talent marketplace y assessment externa",
+          "label": "Biblioteca de E-learning con cursos predeterminados",
           "bullets": [
-            "Assessments de liderazgo validados psicométricamente con benchmarks de industria",
-            "Talent marketplace que conecta con candidatos internos y externos simultáneamente",
-            "Dashboards de readiness con métricas de progreso claras para el Board",
-            "Contenido de desarrollo de liderazgo premium de providers especializados"
+            "OceanAI contrata una biblioteca de E-learning amplia",
+            "Cada empleado busca y escoge los cursos que le parecen mejor",
+            "Sin guía personalizada ni detección de brechas"
           ],
+          "result": "Los empleados no saben por dónde ir, pierden mucho tiempo buscando. Algunos no escogen las capacitaciones que mejor quedan con sus perfiles.",
           "value": 4,
           "risk": 55,
           "stability": 50,
@@ -497,32 +433,32 @@
 
   "bossEvent": {
     "name": "Lord Fragmentación",
-    "description": "Una montaña de Excels, emails sin responder, procesos aislados y datos dispersos en 5 sistemas distintos amenaza con colapsar la torre. Integra y estabiliza la organización.",
+    "description": "Una montaña de papeles mojados, mensajes en botellas sin abrir y mapas desactualizados amenaza con hundir la torre. Integra y estabiliza la organización.",
     "steps": [
       {
-        "label": "Unifica el lenguaje de talento",
-        "tool": "Talent Intelligence Hub",
-        "description": "Un solo grafo de habilidades conecta reclutamiento, onboarding, desempeño y sucesión.",
-        "effect": { "integration": 3, "governance": 2 },
+        "label": "Unifica el lenguaje de la tripulación",
+        "tool": "El Arrecife",
+        "description": "Un solo mapa de habilidades conecta reclutamiento, onboarding, desempeño y sucesión.",
+        "effect": { "trust": 4, "innovation": 1 },
         "icoBonus": 8
       },
       {
         "label": "Activa el autoservicio inteligente",
-        "tool": "Joule + Employee Central",
-        "description": "Cada empleado resuelve sus gestiones desde una conversación. El backlog desaparece.",
-        "effect": { "experience": 3, "productivity": 2 },
+        "tool": "El Faro + Autoservicio",
+        "description": "Cada tripulante resuelve sus gestiones desde una conversación. El backlog desaparece.",
+        "effect": { "innovation": 3, "productivity": 2 },
         "icoBonus": 7
       },
       {
         "label": "Cierra el ciclo de equidad",
-        "tool": "Pay Equity Agent + People Intelligence",
+        "tool": "La Brújula + El Sonar",
         "description": "Detección de brechas salariales y predicción de rotación antes de que el problema escale.",
-        "effect": { "trust": 3, "governance": 2 },
+        "effect": { "trust": 4, "productivity": 1 },
         "icoBonus": 8
       },
       {
         "label": "Conecta desempeño con desarrollo",
-        "tool": "Career Narrative + Learning + Opportunity Marketplace",
+        "tool": "El Pergamino + El Sextante + La Corriente",
         "description": "Las evaluaciones generan planes de acción reales. El talento se mueve donde más aporta.",
         "effect": { "productivity": 3, "innovation": 2 },
         "icoBonus": 7
