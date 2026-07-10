@@ -66,7 +66,8 @@ const Multiplayer = (function () {
       email: email || "",
       company: company || "",
       ico: 0,
-      resources: { productivity: 0, innovation: 0, trust: 0, integration: 0, experience: 0, governance: 0 },
+      grains: 0,
+      resources: { productivity: 0, innovation: 0, trust: 0 },
       choices: {},
       joinedAt: firebase.database.ServerValue.TIMESTAMP
     });
@@ -133,10 +134,11 @@ const Multiplayer = (function () {
   }
 
   // ---------- PLAYER: guarda su elección y progreso ----------
-  async function syncPlayerChoice(missionId, choiceData, newIco, newResources) {
+  async function syncPlayerChoice(missionId, choiceData, newIco, newResources, newGrains) {
     const playerRef = db.ref(`rooms/${roomCode}/players/${playerId}`);
     await playerRef.update({
       ico: newIco,
+      grains: newGrains,
       resources: newResources,
       [`choices/${missionId}`]: choiceData
     });

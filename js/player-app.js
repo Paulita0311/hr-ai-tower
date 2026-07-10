@@ -1,5 +1,5 @@
 /* ============================================
-   PLAYER APP - v2
+   PLAYER APP - v4
    Cada jugador juega individualmente.
    Responde, espera al host, ve sus resultados.
    ============================================ */
@@ -17,7 +17,7 @@
     // ---------- Joule (comodín de pistas) ----------
     const JOULE_MAX_USES = 2;
     const JOULE_COOLDOWN_SECONDS = 40;
-    const JOULE_RING_CIRCUMFERENCE = 2 * Math.PI * 28; // r=28 en el SVG del anillo
+    const JOULE_RING_CIRCUMFERENCE = 2 * Math.PI * 28;
     let jouleUsesLeft = JOULE_MAX_USES;
     let jouleCooldownInterval = null;
     let jouleBubbleTimeout = null;
@@ -27,6 +27,7 @@
     let lastTimerStartedAt = null;
     let currentTimerState = null;
     let missionTimedOut = false;
+    let timerPausedForTutorial = false; // NEW: flag to delay timer until tutorial dismissed
 
     async function init() {
       gameData = await GameEngine.loadData();
@@ -80,6 +81,43 @@
         }
       }
       requestAnimationFrame(step);
+    }
+
+    function animateGrainsCounter(newVal) {
+      const el = document.getElementById("grains-num");
+      if (!el) return;
+      const from = parseInt(el.textContent, 10) || 0;
+      const to = Math.max(0, newVal);
+      if (from === to) { el.textContent = to; return; }
+      const duration = 600;
+      const start = performance.now();
+      function step(now) {
+        const p = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(from + (to - from) * eased);
+        if (p < 1) {
+          requestAnimationFrame(step);
+        } else {
+          el.classList.remove("bump");
+          void el.offsetWidth;
+          el.classList.add("bump");
+        }
+      }
+      requestAnimationFrame(step);
+    }
+
+    function showGrainsEarned(amount) {
+      const wrap = document.getElementById("grains-display");
+      if (!wrap) return;
+      const existing = wrap.querySelector(".grains-earned-badge");
+      if (existing) existing.remove();
+      const badge = document.createElement("span");
+      badge.className = "grains-earned-badge";
+      badge.textContent = (amount >= 0 ? "+" : "") + amount;
+      if (amount < 0) badge.style.color = "#D32F2F";
+      wrap.appendChild(badge);
+      setTimeout(() => { badge.classList.add("fade-out"); }, 1800);
+      setTimeout(() => { badge.remove(); }, 2200);
     }
 
     async function checkRoom() {
@@ -143,17 +181,19 @@
             hasAnsweredThisMission = false;
           }
 
-          // Procesa el timer ANTES de decidir qué renderizar, para que un
-          // timeout ya resuelto (p. ej. mientras el jugador seguía en el
-          // tutorial) se refleje correctamente al construir la misión.
-          handleRoomTimer(room.timer);
+          // If tutorial is showing, pause/hide the timer — don't tick until dismissed
+          if (!tutorialDismissed && currentMissionIdx === 0) {
+            timerPausedForTutorial = true;
+            // Store timer state but don't start visual countdown yet
+            currentTimerState = room.timer || null;
+            pendingFirstMission = true;
+            goScreen("scr-tutorial");
+          } else {
+            // Timer can run freely
+            timerPausedForTutorial = false;
+            handleRoomTimer(room.timer);
 
-          if (!hasAnsweredThisMission) {
-            // Show tutorial before the very first mission
-            if (!tutorialDismissed && currentMissionIdx === 0) {
-              pendingFirstMission = true;
-              goScreen("scr-tutorial");
-            } else {
+            if (!hasAnsweredThisMission) {
               goScreen("scr-game");
               renderMission(currentMissionIdx);
             }
@@ -187,6 +227,9 @@
         if (wrap) wrap.style.display = "none";
         return;
       }
+
+      // Don't show/start timer if tutorial is still visible
+      if (timerPausedForTutorial) return;
 
       const wrap = document.getElementById("mission-timer");
       if (wrap) wrap.style.display = "";
@@ -237,11 +280,26 @@
       }
     }
 
-    function handleMissionTimeout() {
-      if (hasAnsweredThisMission) return; // ya respondió normalmente, no hay nada que marcar
+    async function handleMissionTimeout() {
+      if (hasAnsweredThisMission) return;
       hasAnsweredThisMission = true;
       disableMissionInteractionForTimeout();
+
+      // Aplica penalización de -20 granos
+      const penalty = GameEngine.applyTimeoutPenalty();
+      const state = GameEngine.getState();
+      showGrainsEarned(penalty);
+      animateGrainsCounter(state.grains);
       showTimeoutToast();
+
+      // Sincroniza con Firebase
+      await Multiplayer.syncPlayerChoice(
+        gameData.missions[currentMissionIdx].id,
+        { type: "timeout", label: "Sin respuesta", stability: 0, score: 0, seconds: 0, grainsEarned: penalty },
+        state.ico,
+        state.resources,
+        state.grains
+      );
     }
 
     function showTimeoutToast() {
@@ -249,13 +307,11 @@
       if (!area) return;
       const d = document.createElement("div");
       d.className = "toast toast-timeout";
-      d.textContent = "Tiempo agotado — sin puntos en esta ronda";
+      d.textContent = "Tiempo agotado — pierdes 20 granos de arena";
       area.appendChild(d);
-      setTimeout(() => d.remove(), 2000);
+      setTimeout(() => d.remove(), 4000);
     }
 
-    // Lee las misiones elegidas por el host (y su orden) antes de jugar la
-    // primera misión, en lugar de asumir siempre el listado completo 0..N.
     async function applySelectedMissions(selectedIds) {
       gameData = await GameEngine.loadData("data/missions.json", selectedIds);
       TowerRenderer.init(document.getElementById("tower-canvas"), gameData.missions);
@@ -280,8 +336,15 @@
     function dismissTutorial() {
       tutorialDismissed = true;
       pendingFirstMission = false;
+      timerPausedForTutorial = false;
+
       goScreen("scr-game");
       renderMission(currentMissionIdx);
+
+      // NOW start the timer visually — it resumes from where it already is on Firebase
+      if (currentTimerState) {
+        handleRoomTimer(currentTimerState);
+      }
     }
 
     function renderMission(idx) {
@@ -296,7 +359,7 @@
 
       let h = `<div class="cat-tag">Piso ${idx + 1}: ${m.floorName || m.missionTitle}</div>
                <div class="brief">${m.brief}</div>
-               <div class="sec-lbl" style="margin-top:4px">¿Cómo lo resuelves?</div>`;
+               <div class="sec-lbl" style="margin-top:4px">\u00bfC\u00f3mo lo resuelves?</div>`;
 
       m.options.forEach((opt, oi) => {
         const letters = ["A","B","C"];
@@ -310,10 +373,6 @@
         </div>`;
       });
 
-      h += `<div class="tip">
-              <div class="tip-lbl">Consejo SAP</div>
-              <div class="tip-txt">${m.tooltip}</div>
-            </div>`;
       h += `<button class="btn-conf" id="btn-conf" onclick="PlayerApp.confirm(${idx})" disabled>
               Confirmar mi decisión
             </button>`;
@@ -322,8 +381,6 @@
       updateHUD(GameEngine.getState());
       hideJouleBubble();
 
-      // Si el tiempo ya se agotó (p. ej. el jugador seguía en el tutorial
-      // cuando terminó la cuenta regresiva), no permitir responder tarde.
       if (hasAnsweredThisMission) {
         disableMissionInteractionForTimeout();
       }
@@ -458,6 +515,7 @@
       const result = GameEngine.confirmChoice(missionIdx, selectedCardIdx);
       const state = GameEngine.getState();
       const mission = gameData.missions[missionIdx];
+      const option = mission.options[selectedCardIdx];
 
       await Multiplayer.syncPlayerChoice(
         mission.id,
@@ -466,14 +524,18 @@
           optionIdx: selectedCardIdx
         },
         state.ico,
-        state.resources
+        state.resources,
+        state.grains
       );
 
       updateHUD(state);
+      showGrainsEarned(result.grainsEarned);
+      animateGrainsCounter(state.grains);
       const floorLabel = (mission.floorName || mission.missionTitle).replace(/^Piso\s+/i, "");
       TowerRenderer.buildFloor(missionIdx, result.option.type, floorLabel);
-      showToast(result.isNative ? mission.tooltip : "Esta opción limita trazabilidad y gobernanza.");
-      showEvent(mission, result.isNative);
+
+      // Muestra el texto de resultado como notificación flotante grande (13s)
+      showResultToast(option.result);
 
       document.querySelectorAll(".dc").forEach((el, i) => {
         if (i !== selectedCardIdx) {
@@ -484,7 +546,7 @@
 
       const btn = document.getElementById("btn-conf");
       btn.disabled = true;
-      btn.textContent = "✓ Decisión confirmada — esperando al anfitrión...";
+      btn.textContent = "\u2713 Decisión confirmada — esperando al anfitrión...";
       btn.style.background = "#1D9E75";
     }
 
@@ -496,14 +558,22 @@
       animateICOCounter(ico);
 
       const resMap = {
-        productivity: "PR", innovation: "IN", trust: "TR",
-        integration: "IG", experience: "EX", governance: "GO"
+        productivity: "PR", innovation: "IN", trust: "TR"
       };
       let rh = "";
       Object.keys(resMap).forEach((k) => {
         rh += `<div class="res-chip"><span class="res-ico-badge">${resMap[k]}</span><span class="res-v">${state.resources[k] || 0}</span></div>`;
       });
       document.getElementById("res-row").innerHTML = rh;
+    }
+
+    function showResultToast(msg) {
+      const a = document.getElementById("toast-area");
+      const d = document.createElement("div");
+      d.className = "toast toast-result";
+      d.textContent = msg;
+      a.appendChild(d);
+      setTimeout(() => d.remove(), 13000);
     }
 
     function showToast(msg) {
@@ -515,26 +585,15 @@
       setTimeout(() => d.remove(), 8000);
     }
 
-    function showEvent(mission, isNative) {
-      const ev = mission.unexpectedEvent;
-      if (!ev) return;
-      setTimeout(() => {
-        const a = document.getElementById("ev-area");
-        const d = document.createElement("div");
-        d.className = "ev-box";
-        d.innerHTML = `<div class="ev-glyph">!</div>
-                       <div class="ev-ttl">${ev.title}</div>
-                       <div class="ev-dsc">${isNative ? ev.outcomeIfNative : ev.outcomeIfOther}</div>`;
-        a.appendChild(d);
-        setTimeout(() => d.remove(), 10000);
-      }, 1200);
-    }
-
     function renderResults() {
       const state = GameEngine.getState();
       const ico = Math.min(100, state.ico);
       document.getElementById("res-ico").textContent = ico;
       document.getElementById("res-status").textContent = GameEngine.getICOState(ico).label;
+
+      // Granos totales
+      const grainsEl = document.getElementById("res-grains-num");
+      if (grainsEl) grainsEl.textContent = state.grains;
 
       const choices = state.choices;
       const missions = gameData.missions;
@@ -542,12 +601,13 @@
       missions.forEach((m) => {
         const ch = choices[m.id];
         if (!ch) return;
-        const color = ch.type === "native" ? "#0070F2" : ch.type === "external" ? "#7C4DFF" : "#8891A6";
-        const glyph = ch.type === "native" ? "▲" : ch.type === "external" ? "◆" : "■";
+        const color = ch.type === "native" ? "#0070F2" : ch.type === "external" ? "#7C4DFF" : ch.type === "timeout" ? "#D32F2F" : "#8891A6";
+        const glyph = ch.type === "native" ? "\u25B2" : ch.type === "external" ? "\u25C6" : ch.type === "timeout" ? "\u2715" : "\u25A0";
+        const grainsText = ch.grainsEarned >= 0 ? `+${ch.grainsEarned}` : `${ch.grainsEarned}`;
         towerH += `<div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 14px;border-left:3px solid ${color}">
           <div style="font-size:12px;color:rgba(255,255,255,0.55)">${m.missionTitle}</div>
           <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px">${glyph} ${ch.label || ""}</div>
-          <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px">Estabilidad: ${ch.stability || 0}%</div>
+          <div style="font-size:11px;color:rgba(232,184,75,0.8);margin-top:2px">${grainsText} granos</div>
         </div>`;
       });
       towerH += "</div>";
@@ -555,15 +615,48 @@
       const learnEl = document.getElementById("res-learn");
       if (learnEl) learnEl.innerHTML = `<div class="rl-ttl">Tu torre</div>${towerH}`;
 
-      const nativeCount = Object.values(choices).filter((c) => c.type === "native").length;
-      const badges = [];
-      if (nativeCount === missions.length) badges.push("Business AI Champion", "AI First Master");
-      else if (nativeCount >= 3) badges.push("AI Process Champion", "Maestro Joule");
-      else if (nativeCount >= 2) badges.push("Shadow IT Hunter");
-      else badges.push("Aprendiz en Transición");
+      // ---------- Ranking & Title based on position ----------
+      renderPlayerRanking();
+    }
 
-      const badgesEl = document.getElementById("res-badges");
-      if (badgesEl) badgesEl.innerHTML = badges.map((b) => `<span class="rbadge">${b}</span>`).join("");
+    function renderPlayerRanking() {
+      // Listen to all players to determine this player's rank
+      Multiplayer.onPlayersUpdate((allPlayers) => {
+        if (!allPlayers) return;
+        const sorted = Object.entries(allPlayers)
+          .map(([id, pl]) => ({ id, ...pl }))
+          .sort((a, b) => (b.grains || 0) - (a.grains || 0));
+
+        const myId = Multiplayer.getPlayerId();
+        const myIdx = sorted.findIndex((p) => p.id === myId);
+        const position = myIdx + 1;
+        const total = sorted.length;
+
+        let title = "";
+        let desc = "";
+        if (position === 1) {
+          title = "Capitán Al Mando";
+          desc = "Eres el comandante y máxima autoridad a bordo.";
+        } else if (position === 2) {
+          title = "Primer Oficial";
+          desc = "Eres el segundo al mando del barco.";
+        } else if (position === 3) {
+          title = "Timonel";
+          desc = "Eres importante en el barco, pero por debajo del Capitán y del Primer Oficial.";
+        } else {
+          title = "Marinero";
+          desc = "Eres un trabajador del barco y formas parte de la tripulación.";
+        }
+
+        const rankEl = document.getElementById("res-rank-section");
+        if (rankEl) {
+          rankEl.innerHTML = `
+            <div class="res-rank-position">Posición ${position} de ${total}</div>
+            <div class="res-rank-title">${title}</div>
+            <div class="res-rank-desc">${desc}</div>
+          `;
+        }
+      });
     }
 
     function goScreen(id) {

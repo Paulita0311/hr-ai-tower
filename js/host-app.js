@@ -1,8 +1,9 @@
 /* ============================================
-   HOST APP - v2
+   HOST APP - v3
    Pantalla proyectada. Muestra la situación,
    la torre colectiva, el leaderboard en vivo
    y controla el ritmo del juego.
+   Pantalla final: Top 3 con títulos + % decisiones
    ============================================ */
 
    const HostApp = (function () {
@@ -10,21 +11,6 @@
     let players = {};
     let currentMissionIdx = 0;
     let leaderboardMode = "ico";
-    let selectedMissionIds = [];
-    let activeMissions = [];
-
-    // ---------- Temporizador de misión ----------
-    const MISSION_TIMER_SECONDS = 45;
-    let hostTimerInterval = null;
-    let hostLastTimerStartedAt = null;
-    let hostCurrentTimer = null;
-    let hostAutoAdvanceTriggered = false;
-    let lastBeepedRemaining = null;
-
-    // ---------- Sonido de cuenta regresiva ----------
-    const SOUND_PREF_KEY = "hrAiTowerSoundEnabled";
-    let soundEnabled = localStorage.getItem(SOUND_PREF_KEY) === "true"; // desactivado por defecto
-    let audioCtx = null;
 
     async function init() {
       const res = await fetch("data/missions.json");
@@ -37,131 +23,7 @@
       document.getElementById("host-link-display").textContent = joinLink;
 
       renderQR(joinLink);
-      initSoundToggle();
       listenPlayers();
-      Multiplayer.onRoomUpdate(handleRoomUpdate);
-    }
-
-    function handleRoomUpdate(room) {
-      if (!room) return;
-      renderLobbySelectedMissions(room.selectedMissions);
-      handleHostTimer(room.timer);
-    }
-
-    // ---------- Sonido de cuenta regresiva (Web Audio API, sin archivos) ----------
-    function initSoundToggle() {
-      const input = document.getElementById("sound-toggle-input");
-      if (input) input.checked = soundEnabled;
-    }
-
-    function toggleSound(checked) {
-      soundEnabled = checked;
-      localStorage.setItem(SOUND_PREF_KEY, String(checked));
-    }
-
-    function playBeep(frequency, duration) {
-      if (!soundEnabled) return;
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = "sine";
-        osc.frequency.value = frequency;
-        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration / 1000);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration / 1000);
-      } catch (e) {
-        // Web Audio no disponible/bloqueada: se ignora silenciosamente
-      }
-    }
-
-    // ---------- Temporizador de misión ----------
-    function timerColorFor(remaining) {
-      return remaining < 10 ? "#D32F2F" : remaining <= 20 ? "#E8B84B" : "#1D9E75";
-    }
-
-    function computeRemainingSeconds(timer) {
-      const elapsedMs = timer.paused ? (timer.pausedAt - timer.startedAt) : (Date.now() - timer.startedAt);
-      return Math.max(0, timer.duration - Math.floor(elapsedMs / 1000));
-    }
-
-    function updatePauseButtonLabel(paused) {
-      const btn = document.getElementById("btn-pause-timer");
-      if (btn) btn.textContent = paused ? "Reanudar" : "Pausar";
-    }
-
-    function updateProgressTimerUI(remaining) {
-      const numEl = document.getElementById("progress-timer-num");
-      if (!numEl) return;
-      numEl.textContent = remaining;
-      numEl.style.color = timerColorFor(remaining);
-    }
-
-    function handleHostTimer(timer) {
-      hostCurrentTimer = timer || null;
-
-      if (!timer) {
-        clearInterval(hostTimerInterval);
-        hostTimerInterval = null;
-        return;
-      }
-
-      updatePauseButtonLabel(timer.paused);
-
-      if (timer.startedAt !== hostLastTimerStartedAt) {
-        hostLastTimerStartedAt = timer.startedAt;
-        hostAutoAdvanceTriggered = false;
-        lastBeepedRemaining = null;
-        clearInterval(hostTimerInterval);
-        tickHostTimer();
-        hostTimerInterval = setInterval(tickHostTimer, 1000);
-      } else {
-        tickHostTimer();
-      }
-    }
-
-    function tickHostTimer() {
-      if (!hostCurrentTimer) return;
-      const remaining = computeRemainingSeconds(hostCurrentTimer);
-      updateProgressTimerUI(remaining);
-
-      if (!hostCurrentTimer.paused && remaining <= 5 && remaining !== lastBeepedRemaining) {
-        lastBeepedRemaining = remaining;
-        if (remaining === 4) playBeep(440, 150);
-        else if (remaining === 3) playBeep(480, 150);
-        else if (remaining === 2) playBeep(520, 150);
-        else if (remaining === 1) playBeep(560, 150);
-        else if (remaining === 0) playBeep(880, 400);
-      }
-
-      if (!hostCurrentTimer.paused && remaining <= 0 && !hostAutoAdvanceTriggered) {
-        hostAutoAdvanceTriggered = true;
-        nextMission();
-      }
-    }
-
-    async function pauseTimer() {
-      const roomCode = Multiplayer.getRoomCode();
-      if (roomCode) await Multiplayer.pauseResumeTimer(roomCode);
-    }
-
-    function renderLobbySelectedMissions(selectedIds) {
-      const wrap = document.getElementById("lobby-selected-wrap");
-      if (!wrap) return;
-      if (!selectedIds || !selectedIds.length) {
-        wrap.style.display = "none";
-        return;
-      }
-      wrap.style.display = "";
-      const names = selectedIds.map((id) => {
-        const m = gameData.missions.find((mm) => mm.id === id);
-        return m ? (m.floorName || m.missionTitle) : id;
-      });
-      document.getElementById("lobby-selected-list").innerHTML =
-        names.map((n) => `<span class="selected-mission-chip">${n}</span>`).join("");
     }
 
     function renderQR(link) {
@@ -188,7 +50,6 @@
           renderFooter();
           renderLiveLeaderboard();
           renderSolidezPanel();
-          renderProgressPanel();
         }
       });
     }
@@ -196,13 +57,7 @@
     function renderLobbyChips() {
       let h = "";
       Object.values(players).forEach((pl) => {
-        h += `<div class="host-player-chip">
-          <span class="avatar-circle">${initial(pl.name)}</span>
-          <div class="host-chip-body">
-            <span class="host-chip-name">${pl.name}</span>
-            ${pl.company ? `<span class="host-chip-company">${pl.company}</span>` : ""}
-          </div>
-        </div>`;
+        h += `<div class="host-player-chip"><span class="avatar-circle">${initial(pl.name)}</span>${pl.name}</div>`;
       });
       document.getElementById("host-players-grid").innerHTML = h;
     }
@@ -215,79 +70,104 @@
       return type === "native" ? "#0070F2" : type === "external" ? "#7C4DFF" : "#8891A6";
     }
 
-    // ---------- Pantalla de configuración de partida ----------
+    // ---------- Configuración de partida ----------
     function openConfigScreen() {
-      selectedMissionIds = [];
       goScreen("host-config");
-      renderConfigScreen();
+      renderConfigGrid();
+    }
+
+    function renderConfigGrid() {
+      const grid = document.getElementById("cfg-mission-grid");
+      if (!grid || !gameData) return;
+      let h = "";
+      gameData.missions.forEach((m, i) => {
+        h += `<div class="cfg-mission-item" id="cfg-item-${m.id}" onclick="HostApp.toggleMission('${m.id}')">
+          <span class="cfg-mission-num">${i + 1}</span>
+          <span class="cfg-mission-name">${m.floorName || m.missionTitle}</span>
+          <span class="cfg-mission-check"></span>
+        </div>`;
+      });
+      grid.innerHTML = h;
+    }
+
+    let selectedMissionIds = [];
+
+    function toggleMission(id) {
+      const idx = selectedMissionIds.indexOf(id);
+      if (idx >= 0) {
+        selectedMissionIds.splice(idx, 1);
+      } else {
+        selectedMissionIds.push(id);
+      }
+      updateConfigUI();
     }
 
     function applyPreset(count) {
       selectedMissionIds = gameData.missions.slice(0, count).map((m) => m.id);
-      renderConfigScreen();
+      updateConfigUI();
     }
 
-    function toggleMission(missionId) {
-      const idx = selectedMissionIds.indexOf(missionId);
-      if (idx === -1) {
-        selectedMissionIds.push(missionId); // nueva selección va al final del orden
-      } else {
-        selectedMissionIds.splice(idx, 1);
-      }
-      renderConfigScreen();
-    }
-
-    function renderConfigScreen() {
-      let gridH = "";
+    function updateConfigUI() {
       gameData.missions.forEach((m) => {
-        const isSelected = selectedMissionIds.includes(m.id);
-        gridH += `<div class="cfg-mission-card ${isSelected ? "selected" : ""}" onclick="HostApp.toggleMission('${m.id}')">
-          <div class="cfg-mission-name">${m.floorName || m.missionTitle}</div>
-          <div class="cfg-mission-desc">${m.missionTitle}</div>
-        </div>`;
+        const el = document.getElementById(`cfg-item-${m.id}`);
+        if (el) el.classList.toggle("selected", selectedMissionIds.includes(m.id));
       });
-      document.getElementById("cfg-mission-grid").innerHTML = gridH;
 
-      let orderH = "";
-      if (selectedMissionIds.length) {
-        orderH = selectedMissionIds.map((id, i) => {
+      const orderList = document.getElementById("cfg-order-list");
+      if (orderList) {
+        orderList.innerHTML = selectedMissionIds.map((id, i) => {
           const m = gameData.missions.find((mm) => mm.id === id);
-          const name = m ? (m.floorName || m.missionTitle) : id;
-          return `<div class="cfg-order-item"><span class="cfg-order-num">${i + 1}</span>${name}</div>`;
+          return `<span class="cfg-order-chip">${i + 1}. ${m ? m.floorName : id}</span>`;
         }).join("");
-      } else {
-        orderH = `<div class="cfg-order-empty">Selecciona al menos una misión</div>`;
       }
-      document.getElementById("cfg-order-list").innerHTML = orderH;
 
-      const count = selectedMissionIds.length;
       const btn = document.getElementById("btn-confirm-config");
-      btn.disabled = count === 0;
-      btn.textContent = `Iniciar juego con ${count} piso${count === 1 ? "" : "s"}`;
+      if (btn) {
+        btn.disabled = selectedMissionIds.length < 1;
+        btn.textContent = `Iniciar juego con ${selectedMissionIds.length} piso${selectedMissionIds.length !== 1 ? "s" : ""}`;
+      }
     }
 
     async function confirmConfig() {
-      if (!selectedMissionIds.length) return;
+      if (selectedMissionIds.length < 1) return;
       await Multiplayer.setSelectedMissions(selectedMissionIds);
-      await startGame();
-    }
 
-    async function startGame() {
+      // Filter gameData missions
       const byId = {};
       gameData.missions.forEach((m) => { byId[m.id] = m; });
-      activeMissions = selectedMissionIds.map((id) => byId[id]).filter(Boolean);
-      if (!activeMissions.length) activeMissions = gameData.missions.slice();
+      gameData.missions = selectedMissionIds.map((id) => byId[id]).filter(Boolean);
 
       currentMissionIdx = 0;
       await Multiplayer.advanceRoom("playing", 0);
-      await Multiplayer.startMissionTimer(Multiplayer.getRoomCode(), MISSION_TIMER_SECONDS);
       goScreen("host-playing");
       buildHostTowerFloors();
       renderMissionPanel(0);
       renderFooter();
       renderLiveLeaderboard();
       renderSolidezPanel();
-      renderProgressPanel();
+      startTimer();
+    }
+
+    async function startGame() {
+      currentMissionIdx = 0;
+      await Multiplayer.advanceRoom("playing", 0);
+      goScreen("host-playing");
+      buildHostTowerFloors();
+      renderMissionPanel(0);
+      renderFooter();
+      renderLiveLeaderboard();
+      renderSolidezPanel();
+      startTimer();
+    }
+
+    function startTimer() {
+      const code = Multiplayer.getRoomCode();
+      Multiplayer.startMissionTimer(code, 45);
+    }
+
+    function pauseTimer() {
+      const code = Multiplayer.getRoomCode();
+      Multiplayer.pauseResumeTimer(code);
     }
 
     function renderRoundIndicator(idx, total) {
@@ -301,8 +181,8 @@
     }
 
     function renderMissionPanel(idx) {
-      const m = activeMissions[idx];
-      const total = activeMissions.length;
+      const m = gameData.missions[idx];
+      const total = gameData.missions.length;
 
       renderRoundIndicator(idx, total);
       document.getElementById("host-cat-tag").textContent = `Piso ${idx + 1}: ${m.floorName || m.missionTitle}`;
@@ -312,7 +192,7 @@
       m.options.forEach((opt, oi) => {
         const letter = ["A", "B", "C"][oi];
         optsH += `<div class="host-option">
-          <span class="opt-letter type-${opt.type}">${letter}</span>
+          <span class="opt-letter">${letter}</span>
           <span class="host-opt-lbl">${opt.label}</span>
         </div>`;
       });
@@ -321,11 +201,11 @@
       const btnNext = document.getElementById("btn-next-mission");
       btnNext.innerHTML = idx >= total - 1
         ? 'Ver resultados <span class="gh-arrow">&rarr;</span>'
-        : 'Siguiente misión <span class="gh-arrow">&rarr;</span>';
+        : 'Siguiente <span class="gh-arrow">&rarr;</span>';
     }
 
     function renderFooter() {
-      const m = activeMissions[currentMissionIdx];
+      const m = gameData.missions[currentMissionIdx];
       const playerList = Object.values(players);
       const total = playerList.length;
       const answered = playerList.filter((pl) => pl.choices && pl.choices[m.id]).length;
@@ -333,32 +213,6 @@
       document.getElementById("gh-conn-count").textContent = total;
       document.getElementById("gh-footer-status").textContent =
         total === 0 ? "Esperando jugadores…" : `${answered} / ${total} respondieron`;
-    }
-
-    const CHECK_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`;
-    const CLOCK_ICON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>`;
-
-    function renderProgressPanel() {
-      const list = document.getElementById("progress-player-list");
-      if (!list) return;
-
-      const mission = activeMissions[currentMissionIdx];
-      const playerList = Object.values(players);
-      const total = playerList.length;
-      const answered = mission ? playerList.filter((pl) => pl.choices && pl.choices[mission.id]).length : 0;
-
-      const countEl = document.getElementById("progress-answered-count");
-      if (countEl) countEl.textContent = `${answered} de ${total} respondieron`;
-
-      let rowsH = "";
-      playerList.forEach((pl) => {
-        const hasAnswered = !!(mission && pl.choices && pl.choices[mission.id]);
-        rowsH += `<div class="progress-player-row">
-          <span class="progress-player-name">${pl.name}</span>
-          <span class="progress-player-status ${hasAnswered ? "answered" : "pending"}">${hasAnswered ? CHECK_ICON_SVG : CLOCK_ICON_SVG}</span>
-        </div>`;
-      });
-      list.innerHTML = rowsH;
     }
 
     function avgStability(pl) {
@@ -420,9 +274,9 @@
 
     function buildHostTowerFloors() {
       const stack = document.getElementById("host-tower-stack");
-      const total = activeMissions.length;
+      const total = gameData.missions.length;
       stack.innerHTML = "";
-      activeMissions.forEach((m, i) => {
+      gameData.missions.forEach((m, i) => {
         const f = document.createElement("div");
         f.className = "tower-floor empty";
         f.id = `host-floor-${i}`;
@@ -444,91 +298,174 @@
     }
 
     function buildHostFloor(idx) {
-      const mission = activeMissions[idx];
+      const mission = gameData.missions[idx];
       const type = majorityTypeForMission(mission.id);
-      const glyph = type === "native" ? "▲" : type === "external" ? "◆" : "■";
+      const glyph = type === "native" ? "\u25B2" : type === "external" ? "\u25C6" : "\u25A0";
       const f = document.getElementById(`host-floor-${idx}`);
       if (!f) return;
       f.className = `tower-floor built type-${type}`;
       f.innerHTML = `<span class="floor-glyph">${glyph}</span><span class="floor-num">${idx + 1}</span>`;
       void f.offsetWidth;
       f.classList.add("drop-anim");
-      document.getElementById("host-tower-count").textContent = `${idx + 1}/${activeMissions.length}`;
+      document.getElementById("host-tower-count").textContent = `${idx + 1}/${gameData.missions.length}`;
     }
 
     async function nextMission() {
       buildHostFloor(currentMissionIdx);
       currentMissionIdx++;
 
-      if (currentMissionIdx >= activeMissions.length) {
-        clearInterval(hostTimerInterval);
-        hostTimerInterval = null;
+      if (currentMissionIdx >= gameData.missions.length) {
         await Multiplayer.advanceRoom("results");
         goScreen("host-results");
-        renderLeaderboard();
+        renderFinalResults();
         return;
       }
 
       await Multiplayer.advanceRoom("playing", currentMissionIdx);
-      await Multiplayer.startMissionTimer(Multiplayer.getRoomCode(), MISSION_TIMER_SECONDS);
       renderMissionPanel(currentMissionIdx);
       renderFooter();
       renderLiveLeaderboard();
       renderSolidezPanel();
-      renderProgressPanel();
+      startTimer();
+    }
+
+    // ---------- PANTALLA FINAL DEL HOST ----------
+    function getRankTitle(position) {
+      switch (position) {
+        case 1: return "Capitán Al Mando";
+        case 2: return "Primer Oficial";
+        case 3: return "Timonel";
+        default: return "Marinero";
+      }
+    }
+
+    function renderFinalResults() {
+      const container = document.getElementById("host-results-content");
+      if (!container) return;
+
+      const playerList = Object.values(players);
+      // Ordenar por granos (principal ranking)
+      const sorted = playerList.sort((a, b) => (b.grains || 0) - (a.grains || 0));
+
+      // --- TOP 3 PODIO ---
+      let podiumH = '<div class="host-podium">';
+      const top3 = sorted.slice(0, 3);
+      const podiumClasses = ["podium-gold", "podium-silver", "podium-bronze"];
+      const podiumEmojis = ["1°", "2°", "3°"];
+
+      top3.forEach((pl, i) => {
+        const title = getRankTitle(i + 1);
+        podiumH += `<div class="podium-card ${podiumClasses[i]}">
+          <div class="podium-position">${podiumEmojis[i]}</div>
+          <div class="podium-avatar">${initial(pl.name)}</div>
+          <div class="podium-name">${pl.name}</div>
+          <div class="podium-title">${title}</div>
+          <div class="podium-grains">${pl.grains || 0} granos</div>
+        </div>`;
+      });
+      podiumH += '</div>';
+
+      // --- PORCENTAJES DE DECISIONES ---
+      let totalChoices = 0;
+      let manualCount = 0;
+      let externalCount = 0;
+      let nativeCount = 0;
+
+      playerList.forEach((pl) => {
+        if (!pl.choices) return;
+        Object.values(pl.choices).forEach((ch) => {
+          if (ch.type === "manual") { manualCount++; totalChoices++; }
+          else if (ch.type === "external") { externalCount++; totalChoices++; }
+          else if (ch.type === "native") { nativeCount++; totalChoices++; }
+          // timeout no se cuenta
+        });
+      });
+
+      const pctManual = totalChoices > 0 ? Math.round((manualCount / totalChoices) * 100) : 0;
+      const pctExternal = totalChoices > 0 ? Math.round((externalCount / totalChoices) * 100) : 0;
+      const pctNative = totalChoices > 0 ? Math.round((nativeCount / totalChoices) * 100) : 0;
+
+      let statsH = `<div class="host-stats-section">
+        <div class="host-stats-title">Distribución de decisiones</div>
+        <div class="host-stats-grid">
+          <div class="host-stat-card stat-manual">
+            <div class="host-stat-pct">${pctManual}%</div>
+            <div class="host-stat-label">Manual</div>
+            <div class="host-stat-bar"><div class="host-stat-fill" style="width:${pctManual}%;background:#8891A6"></div></div>
+          </div>
+          <div class="host-stat-card stat-external">
+            <div class="host-stat-pct">${pctExternal}%</div>
+            <div class="host-stat-label">Externo (parcial)</div>
+            <div class="host-stat-bar"><div class="host-stat-fill" style="width:${pctExternal}%;background:#7C4DFF"></div></div>
+          </div>
+          <div class="host-stat-card stat-native">
+            <div class="host-stat-pct">${pctNative}%</div>
+            <div class="host-stat-label">Nativo (IA integrada)</div>
+            <div class="host-stat-bar"><div class="host-stat-fill" style="width:${pctNative}%;background:#0070F2"></div></div>
+          </div>
+        </div>
+      </div>`;
+
+      // --- LEADERBOARD COMPLETO ---
+      let lbH = '<div class="host-final-leaderboard"><div class="host-final-lb-title">Ranking completo</div>';
+      sorted.forEach((pl, i) => {
+        const title = getRankTitle(i + 1);
+        const rankCls = i === 0 ? "r1" : i === 1 ? "r2" : i === 2 ? "r3" : "";
+        lbH += `<div class="lb-row ${i < 3 ? "top3" : ""}">
+          <div class="lb-left">
+            <span class="lb-rank ${rankCls}">${i + 1}</span>
+            <span class="lb-name">${pl.name}</span>
+            <span class="lb-title-tag">${title}</span>
+          </div>
+          <div class="lb-right">
+            <span class="lb-grains">${pl.grains || 0} granos</span>
+            <span class="lb-ico">ICO ${pl.ico || 0}</span>
+          </div>
+        </div>`;
+      });
+      lbH += '</div>';
+
+      // --- EXPORTAR ---
+      let exportH = `<div class="host-export-section">
+        <button class="btn-export" onclick="HostApp.exportResults()">Exportar resultados (CSV)</button>
+      </div>`;
+
+      container.innerHTML = podiumH + statsH + lbH + exportH;
+    }
+
+    function exportResults() {
+      const playerList = Object.values(players);
+      const sorted = playerList.sort((a, b) => (b.grains || 0) - (a.grains || 0));
+
+      let csv = "Nombre,Empresa,Correo,ICO Final,Decisiones Nativas,Decisiones Externas,Decisiones Manuales\n";
+
+      sorted.forEach((pl) => {
+        let nativeCount = 0;
+        let externalCount = 0;
+        let manualCount = 0;
+
+        if (pl.choices) {
+          Object.values(pl.choices).forEach((ch) => {
+            if (ch.type === "native") nativeCount++;
+            else if (ch.type === "external") externalCount++;
+            else if (ch.type === "manual") manualCount++;
+          });
+        }
+
+        csv += `"${pl.name}","${pl.company || ""}","${pl.email || ""}",${pl.ico || 0},${nativeCount},${externalCount},${manualCount}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `hr-ai-tower-resultados-${Date.now()}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
     }
 
     function renderLeaderboard() {
-      const sorted = Object.values(players).sort((a, b) => (b.ico || 0) - (a.ico || 0));
-      document.getElementById("leaderboard").innerHTML = renderLeaderboardRows(sorted) + `
-        <div class="export-wrap">
-          <button class="btn-go" id="btn-export-csv" onclick="HostApp.exportParticipants()">Exportar participantes</button>
-          <div class="export-status" id="export-status"></div>
-        </div>`;
-    }
-
-    function csvEscape(value) {
-      const str = value === null || value === undefined ? "" : String(value);
-      if (/[",\n]/.test(str)) {
-        return `"${str.replace(/"/g, '""')}"`;
-      }
-      return str;
-    }
-
-    function exportParticipants() {
-      const header = ["Nombre", "Empresa", "Correo", "ICO Final", "Decisiones Nativas", "Decisiones Externas", "Decisiones Manuales"];
-      const rows = Object.values(players).map((pl) => {
-        const choices = Object.values(pl.choices || {});
-        return [
-          pl.name || "",
-          pl.company || "",
-          pl.email || "",
-          pl.ico || 0,
-          choices.filter((c) => c.type === "native").length,
-          choices.filter((c) => c.type === "external").length,
-          choices.filter((c) => c.type === "manual").length
-        ];
-      });
-
-      const csvContent = [header, ...rows].map((row) => row.map(csvEscape).join(",")).join("\r\n");
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const url = URL.createObjectURL(blob);
-      const dateStr = new Date().toISOString().slice(0, 10);
-
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `hr-ai-tower-sesion-${dateStr}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      Multiplayer.closeRoom().then(() => {
-        const statusEl = document.getElementById("export-status");
-        if (statusEl) statusEl.textContent = "Datos exportados y sala eliminada de Firebase";
-        const btn = document.getElementById("btn-export-csv");
-        if (btn) btn.disabled = true;
-      });
+      renderFinalResults();
     }
 
     function goScreen(id) {
@@ -541,11 +478,11 @@
       location.reload();
     }
 
-    return {
-      init, startGame, nextMission, restart, setLeaderboardMode, exportParticipants,
-      openConfigScreen, applyPreset, toggleMission, confirmConfig,
-      pauseTimer, toggleSound
-    };
+    function toggleSound(enabled) {
+      // Placeholder for sound toggle
+    }
+
+    return { init, startGame, openConfigScreen, confirmConfig, toggleMission, applyPreset, nextMission, restart, setLeaderboardMode, pauseTimer, exportResults, toggleSound };
   })();
 
   document.addEventListener("DOMContentLoaded", () => HostApp.init());
