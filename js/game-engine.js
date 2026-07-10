@@ -11,17 +11,18 @@ const GameEngine = (function () {
     playerName: "",
     avatar: null,
     ico: 0,
-    resources: { productivity: 0, innovation: 0, trust: 0, integration: 0, experience: 0, governance: 0 },
+    grains: 0,
+    resources: { productivity: 0, innovation: 0, trust: 0 },
     choices: {},        // { missionId: { type, value, risk, stability, timeTaken } }
     currentMissionIdx: 0,
     bossStepsDone: 0,
     missionStartTime: null
   };
 
+  const GRAINS_BY_TYPE = { manual: 10, external: 25, native: 50 };
+  const TIMEOUT_PENALTY = -20;
+
   // ---------- Carga de datos ----------
-  // missionIds (opcional): filtra y reordena GAME_DATA.missions según ese
-  // array de ids, para partidas configuradas por el host con un subset
-  // de misiones en un orden específico.
   async function loadData(path = "data/missions.json", missionIds) {
     const res = await fetch(path);
     if (!res.ok) throw new Error("No se pudo cargar missions.json");
@@ -41,23 +42,21 @@ const GameEngine = (function () {
   }
 
   // ---------- Scoring ----------
-  // Puntuación = 0.40 × Valor + 0.25 × Tiempo + 0.35 × Riesgo
   function calcTimeScore(secondsTaken) {
     const cfg = GAME_DATA.gameConfig.timeScoring;
     const t = Math.min(secondsTaken, cfg.maxSeconds);
     const ratio = t / cfg.maxSeconds;
-    // decae suave de maxPoints a minPoints, nunca penaliza duro la reflexión
     return Math.round(cfg.maxPoints - ratio * (cfg.maxPoints - cfg.minPoints));
   }
 
   function calcMissionScore(option, secondsTaken) {
     const w = GAME_DATA.gameConfig.scoringWeights;
-    const valueScore = Math.min(100, option.value * 12.5); // normaliza value (0-8) a 0-100
+    const valueScore = Math.min(100, option.value * 12.5);
     const timeScore = calcTimeScore(secondsTaken);
-    const riskScore = option.risk; // ya viene en escala 0-100
+    const riskScore = option.risk;
 
     const total = w.value * valueScore + w.time * timeScore + w.risk * riskScore;
-    return Math.round(total / 10); // escalado a contribución razonable sobre ICO (0-100)
+    return Math.round(total / 10);
   }
 
   // ---------- Flujo de misión ----------
@@ -75,13 +74,16 @@ const GameEngine = (function () {
     const seconds = getElapsedSeconds();
 
     const missionScore = calcMissionScore(option, seconds);
+    const grainsEarned = GRAINS_BY_TYPE[option.type] || 0;
+    state.grains += grainsEarned;
 
     state.choices[mission.id] = {
       type: option.type,
       label: option.label,
       stability: option.stability,
       score: missionScore,
-      seconds: Math.round(seconds)
+      seconds: Math.round(seconds),
+      grainsEarned: grainsEarned
     };
 
     // aplica recursos
@@ -89,12 +91,16 @@ const GameEngine = (function () {
       state.resources[k] = (state.resources[k] || 0) + option.resources[k];
     });
 
-    // ICO acumulado (promedio simple, tope 100)
-    state.ico = Math.min(100, Math.round((state.ico * Object.keys(state.choices).length - missionScore + missionScore + state.ico) / (Object.keys(state.choices).length + 1)));
-    // (fórmula simplificada de acumulación, ver nota abajo)
+    // ICO acumulado
     state.ico = Math.min(100, computeRunningICO());
 
-    return { missionScore, option, isNative: option.type === "native" };
+    return { missionScore, option, isNative: option.type === "native", grainsEarned };
+  }
+
+  // ---------- Penalización por timeout ----------
+  function applyTimeoutPenalty() {
+    state.grains = Math.max(0, state.grains + TIMEOUT_PENALTY);
+    return TIMEOUT_PENALTY;
   }
 
   function computeRunningICO() {
@@ -126,7 +132,8 @@ const GameEngine = (function () {
       playerName: state.playerName,
       avatar: state.avatar,
       ico: 0,
-      resources: { productivity: 0, innovation: 0, trust: 0, integration: 0, experience: 0, governance: 0 },
+      grains: 0,
+      resources: { productivity: 0, innovation: 0, trust: 0 },
       choices: {},
       currentMissionIdx: 0,
       bossStepsDone: 0,
@@ -150,6 +157,7 @@ const GameEngine = (function () {
     setPlayer,
     startMissionTimer,
     confirmChoice,
+    applyTimeoutPenalty,
     getICOState,
     doBossStep,
     reset
