@@ -25,18 +25,32 @@
       "id": "rec",
       "floorName": "Reclutamiento",
       "missionTitle": "La Temporada de Pesca",
-      "brief": "OceanAI Inc abre una nueva ruta de pesca y necesita fichar 30 marineros en 30 días, o pierde la temporada.",
-      "jouleTip": "Activa ranking automático por habilidades y movilidad interna desde el día uno; publica rápido, pero decide solo con listas priorizadas y alertas a candidatos internos ya listos.",
+      "brief": "OceanAI Inc abre una nueva ruta de pesca y necesita fichar 30 marineros en 30 días. Si no lo logra, pierde la temporada completa frente a otras flotas que ya están reclutando.",
+      "jouleTip": "Ranking automático + movilidad interna desde el día uno.",
       "options": [
         {
-          "type": "external",
-          "label": "El Faro escribe las fichas de puesto en un día",
+          "type": "manual",
+          "label": "Fichas a mano, sin orden",
           "bullets": [
-            "El Faro genera las descripciones de puesto rápidamente",
+            "Escriben las fichas de puesto a mano sin asistencia",
+            "Sin orden ni priorización de candidatos",
+            "Dependen de que los candidatos lleguen solos"
+          ],
+          "result": "Solo cubren el 40% de los puestos a tiempo.",
+          "value": 1,
+          "risk": 20,
+          "stability": 20,
+          "resources": {}
+        },
+        {
+          "type": "external",
+          "label": "Joule escribe las fichas, pero revisas solicitudes una por una",
+          "bullets": [
+            "Joule genera las descripciones de puesto rápidamente",
             "Las solicitudes se revisan una por una, sin ranking ni priorización",
             "Se publica rápido pero sin filtro inteligente de candidatos"
           ],
-          "result": "Publican rápido, pero se ahogan en solicitudes. Cubren poco más de la mitad de los puestos.",
+          "result": "Cubren poco más de la mitad de los puestos.",
           "value": 4,
           "risk": 55,
           "stability": 50,
@@ -44,31 +58,17 @@
         },
         {
           "type": "native",
-          "label": "El Faro + El Arrecife + La Corriente trabajan juntos",
+          "label": "Joule arma fichas + ranking + aviso automático a talento interno",
           "bullets": [
-            "El Faro y el Arrecife arman las fichas y ordenan candidatos por habilidad real",
-            "La Corriente avisa directo a los tripulantes internos que calzan con el puesto",
-            "Ranking automático por compatibilidad real de habilidades"
+            "Joule arma fichas y ordena candidatos por habilidad real",
+            "Aviso automático a talento interno que calza con el puesto",
+            "Apoyado en SmartRecruiters, la plataforma integrada nativamente con SAP SuccessFactors"
           ],
-          "result": "Cubren más del 90% de los puestos en 48 horas. El barco zarpa a tiempo.",
+          "result": "Cubren más del 90% de los puestos en 48 horas.",
           "value": 8,
           "risk": 100,
           "stability": 85,
           "resources": { "trust": 4, "productivity": 2, "innovation": 2 }
-        },
-        {
-          "type": "manual",
-          "label": "Fichas de puesto a mano y esperar solicitudes",
-          "bullets": [
-            "Escriben las fichas de puesto a mano sin asistencia",
-            "Revisan todo sin ningún orden ni ayuda",
-            "Dependen de que los candidatos lleguen solos"
-          ],
-          "result": "Solo cubren el 40% de los puestos a tiempo. El barco pierde marineros valiosos frente a otras flotas.",
-          "value": 1,
-          "risk": 20,
-          "stability": 20,
-          "resources": {}
         }
       ]
     },
@@ -76,16 +76,16 @@
       "id": "onb",
       "floorName": "Onboarding",
       "missionTitle": "Tripulantes al Agua",
-      "brief": "OceanAI Inc suma 100 tripulantes nuevos al mes, pero muchos abandonan el barco antes de los tres meses.",
-      "jouleTip": "Asigna una ruta personalizada por rol con hitos medibles y nudges diarios; mantén un radar de riesgo temprano y dispara acciones del manager antes del primer mes.",
+      "brief": "OceanAI Inc suma 100 tripulantes nuevos cada mes, pero una parte importante abandona el barco antes de cumplir tres meses, lo que eleva el costo de reclutamiento y golpea la moral del resto de la tripulación.",
+      "jouleTip": "Ruta por rol con hitos medibles y radar de riesgo temprano.",
       "options": [
         {
           "type": "native",
-          "label": "Ruta personalizada + El Faro 24/7 + El Sonar",
+          "label": "Ruta personalizada + Joule guía 24/7 + alerta de riesgo de fuga",
           "bullets": [
             "Cada tripulante recibe una ruta personalizada desde el día uno",
-            "El Faro guía a cada nuevo tripulante a toda hora",
-            "El Sonar avisa a tiempo si alguien muestra señales de irse"
+            "Joule guía a cada nuevo tripulante a toda hora",
+            "Alerta de riesgo de fuga avisa a tiempo si alguien muestra señales de irse"
           ],
           "result": "El abandono cae fuerte. Los jefes de cubierta actúan antes de perder gente.",
           "value": 8,
@@ -95,13 +95,13 @@
         },
         {
           "type": "manual",
-          "label": "Misma lista de tareas para todos + dudas por carta",
+          "label": "Misma lista de tareas para todos, dudas por carta",
           "bullets": [
             "Mandan la misma lista de tareas a todos, sin importar el puesto",
             "Las dudas se resuelven solo por carta, con días de espera",
             "Sin seguimiento ni alertas de progreso"
           ],
-          "result": "Nadie sabe qué es prioridad. El abandono casi no baja.",
+          "result": "El abandono casi no baja.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -109,13 +109,13 @@
         },
         {
           "type": "external",
-          "label": "Rutas distintas por puesto + El Faro para dudas",
+          "label": "Rutas por puesto + Joule responde dudas, pero nadie avisa atrasos",
           "bullets": [
             "Crean rutas distintas según el puesto del tripulante",
-            "El Faro responde dudas rápidas del día a día",
+            "Joule responde dudas rápidas del día a día",
             "Nadie avisa si algo se atrasa o alguien está en riesgo"
           ],
-          "result": "Mejora la experiencia, pero el abandono baja poco.",
+          "result": "Abandono baja poco.",
           "value": 4,
           "risk": 55,
           "stability": 50,
@@ -127,18 +127,18 @@
       "id": "ges",
       "floorName": "Gestión del Personal",
       "missionTitle": "Solicitudes a la Deriva",
-      "brief": "En OceanAI Inc se acumulan solicitudes sin resolver, hay errores en el registro de la tripulación, y los accesos no se cierran a tiempo cuando alguien desembarca.",
-      "jouleTip": "Automatiza autoservicio de punta a punta y prioriza casos por impacto real; combina cierres de acceso por evento con playbooks de retención solo para riesgo validado por datos.",
+      "brief": "En OceanAI Inc se acumulan solicitudes sin resolver, hay errores en el registro de la tripulación, y los accesos no se cierran a tiempo cuando alguien desembarca, lo que genera riesgos de seguridad y de pago.",
+      "jouleTip": "Autoservicio de punta a punta + retención basada en datos.",
       "options": [
         {
           "type": "manual",
-          "label": "Procesar todo a mano el fin de semana",
+          "label": "Todo a mano, sin atender riesgos detectados",
           "bullets": [
-            "Procesan todo a mano, el fin de semana, a ojo",
-            "No hacen nada con el grupo que el Sonar marcó en riesgo",
-            "Sin priorización ni automatización de ningún tipo"
+            "Procesan todo a mano, sin priorización",
+            "No atienden los riesgos detectados",
+            "Se acumulan errores y se van los tripulantes en riesgo"
           ],
-          "result": "Se cometen nuevos errores por el cansancio. Varios tripulantes en riesgo terminan yéndose.",
+          "result": "Se acumulan errores y se van los tripulantes en riesgo.",
           "value": 1,
           "risk": 20,
           "stability": 20,
@@ -146,13 +146,13 @@
         },
         {
           "type": "native",
-          "label": "Autoservicio total + El Arrecife + El Sonar",
+          "label": "Autoservicio total + priorización por impacto + alerta de riesgo (Joule)",
           "bullets": [
             "El autoservicio resuelve todo en minutos sin intervención humana",
-            "El Arrecife prioriza los errores por impacto real en la operación",
-            "El Sonar detecta quién está en riesgo y sugiere una acción concreta"
+            "Priorización por impacto real en la operación",
+            "Joule detecta quién está en riesgo y sugiere una acción concreta"
           ],
-          "result": "Cero solicitudes pendientes en dos semanas. Los accesos se cierran solos. El equipo se convierte en el mejor de la flota.",
+          "result": "Cero pendientes en 2 semanas.",
           "value": 8,
           "risk": 100,
           "stability": 85,
@@ -160,13 +160,13 @@
         },
         {
           "type": "external",
-          "label": "Autoservicio para cambios simples + lo demás a mano",
+          "label": "Autoservicio para lo simple, resto a mano por orden de llegada",
           "bullets": [
             "Activan el autoservicio solo para cambios simples",
             "Los errores y accesos se siguen resolviendo a mano",
             "Los casos se atienden en orden de llegada, no por urgencia"
           ],
-          "result": "Baja la carga, pero los casos urgentes quedan al final y generan problemas de pago.",
+          "result": "Baja carga, pero urgentes se atrasan.",
           "value": 4,
           "risk": 55,
           "stability": 50,
@@ -182,20 +182,6 @@
       "jouleTip": "Un error que se repite no es mala suerte, es una regla que falta.",
       "options": [
         {
-          "type": "external",
-          "label": "El Vigía ordena los casos por riesgo",
-          "bullets": [
-            "El Vigía prioriza y ordena los casos por nivel de riesgo",
-            "Corrigen los más obvios primero con el equipo disponible",
-            "Aprueban el cambio fiscal sin simulación previa"
-          ],
-          "result": "Los casos principales limpios, pero 210 nóminas afectadas sin revisión.",
-          "value": 4,
-          "risk": 55,
-          "stability": 50,
-          "resources": { "productivity": 3, "trust": 1 }
-        },
-        {
           "type": "manual",
           "label": "Revisión manual completa + aprobación por excepción",
           "bullets": [
@@ -210,12 +196,26 @@
           "resources": {}
         },
         {
-          "type": "native",
-          "label": "El Cartógrafo + El Vigía + El Faro en conjunto",
+          "type": "external",
+          "label": "El Vigía ordena los casos por riesgo",
           "bullets": [
-            "El Cartógrafo crea y activa la regla fiscal antes del cierre",
-            "El Vigía prioriza los 847 casos pendientes por impacto",
-            "El Faro resuelve las 250 dudas sin tocar al equipo de nómina"
+            "El Vigía prioriza y ordena los casos por nivel de riesgo",
+            "Corrigen los más obvios primero con el equipo disponible",
+            "Aprueban el cambio fiscal sin simulación previa"
+          ],
+          "result": "Los casos principales limpios, pero 210 nóminas afectadas sin revisión.",
+          "value": 4,
+          "risk": 55,
+          "stability": 50,
+          "resources": { "productivity": 3, "trust": 1 }
+        },
+        {
+          "type": "native",
+          "label": "Joule crea regla fiscal + prioriza casos + resuelve dudas",
+          "bullets": [
+            "Joule crea y activa la regla fiscal antes del cierre",
+            "Prioriza los 847 casos pendientes por impacto",
+            "Resuelve las 250 dudas sin tocar al equipo de nómina"
           ],
           "result": "Nómina limpia, consultas resueltas en minutos, reglas actualizadas para siempre.",
           "value": 8,
@@ -233,18 +233,18 @@
       "jouleTip": "Un capitán que no sabe si paga justo no puede tomar buenas decisiones. Los datos tienen que llegar antes de que firme, no después.",
       "options": [
         {
-          "type": "native",
-          "label": "La Brújula + El Faro + El Pergamino + El Sonar",
+          "type": "manual",
+          "label": "El Excel de siempre sin datos de equidad",
           "bullets": [
-            "La Brújula muestra a cada capitán solo la equidad de su equipo",
-            "El Faro genera los argumentos para comunicar cada decisión",
-            "El Pergamino documenta el viaje de cada marinero y El Sonar simula escenarios"
+            "El Excel de siempre sin datos de desempeño ni equidad",
+            "Solo se revisan los casos extremos al final del ciclo",
+            "Cada capitán decide con su criterio sin información objetiva"
           ],
-          "result": "Ciclo en 6 semanas. Brecha cae al 4%. Cero bajas en alto desempeño.",
-          "value": 8,
-          "risk": 100,
-          "stability": 85,
-          "resources": { "trust": 4, "innovation": 2, "productivity": 2 }
+          "result": "La brecha se mantiene en 17%. Tres marineros clave se van. La auditoría encuentra lo mismo.",
+          "value": 1,
+          "risk": 20,
+          "stability": 20,
+          "resources": {}
         },
         {
           "type": "external",
@@ -261,18 +261,18 @@
           "resources": { "productivity": 3, "trust": 1 }
         },
         {
-          "type": "manual",
-          "label": "El Excel de siempre sin datos de equidad",
+          "type": "native",
+          "label": "Joule muestra equidad + genera argumentos + simula escenarios",
           "bullets": [
-            "El Excel de siempre sin datos de desempeño ni equidad",
-            "Solo se revisan los casos extremos al final del ciclo",
-            "Cada capitán decide con su criterio sin información objetiva"
+            "Joule muestra a cada capitán solo su equipo",
+            "Genera los argumentos y documenta el viaje de cada marinero",
+            "Simula escenarios antes de comprometer el presupuesto"
           ],
-          "result": "La brecha se mantiene en 17%. Tres marineros clave se van. La auditoría encuentra lo mismo.",
-          "value": 1,
-          "risk": 20,
-          "stability": 20,
-          "resources": {}
+          "result": "Ciclo en 6 semanas. Brecha cae al 4%. Cero bajas en alto desempeño.",
+          "value": 8,
+          "risk": 100,
+          "stability": 85,
+          "resources": { "trust": 4, "innovation": 2, "productivity": 2 }
         }
       ]
     },
@@ -299,9 +299,9 @@
         },
         {
           "type": "external",
-          "label": "El Faro mejora comentarios pero sin metas actualizadas",
+          "label": "El Faro mejora comentarios pero metas sin actualizar",
           "bullets": [
-            "El Faro mejora la redacción de los comentarios de evaluación",
+            "El Faro mejora los comentarios de evaluación",
             "Las metas siguen siendo las de enero sin actualizar",
             "El feedback de 360 llega sin orientación ni contexto"
           ],
@@ -313,11 +313,11 @@
         },
         {
           "type": "native",
-          "label": "El Sonar + El Pergamino + El Faro + El Sextante",
+          "label": "Joule detecta genéricas + resume año + feedback accionable + metas reales",
           "bullets": [
-            "El Sonar detecta evaluaciones genéricas y alerta",
-            "El Pergamino resume el año completo de cada marinero con evidencia real",
-            "El Faro hace el feedback accionable y El Sextante fija metas reales"
+            "Joule detecta evaluaciones genéricas y alerta",
+            "Resume el año de cada marinero con evidencia real",
+            "Hace el feedback accionable y fija metas reales para el año siguiente"
           ],
           "result": "Evaluaciones al 94%, calibración en medio día, dos talentos clave rescatados.",
           "value": 8,
@@ -332,17 +332,17 @@
       "floorName": "Sucesión y Desarrollo",
       "missionTitle": "El Capitán se Va",
       "brief": "La directora de Ventas/Pesca de OceanAI Inc acaba de dar aviso de que se cambiará de empresa en 1 mes. Los HR managers ahora tienen que encontrar al mejor sucesor posible.",
-      "jouleTip": "No elijas al sucesor por cercanía. Usa datos reales de capacidades y ponlo a prueba antes de decidir.",
+      "jouleTip": "Cuando el riesgo de equivocarse es alto, el costo de validar antes de comprometerse siempre es menor que el costo de corregir después.",
       "options": [
         {
           "type": "external",
-          "label": "Validar con Joule a la candidata favorita de la directora",
+          "label": "La directora saliente tiene una candidata favorita",
           "bullets": [
             "La directora recomienda a alguien de su equipo",
-            "Con Joule se valida si ese empleado tiene las capacidades necesarias",
-            "Se analizan brechas pero solo para un candidato"
+            "Con ayuda de Joule se valida si ese empleado está capacitado para ser el sucesor",
+            "Se analizan capacidades actuales y brechas"
           ],
-          "result": "La transición sale bien, pero los reclutadores solo conocen a un candidato. No se exploraron otras opciones.",
+          "result": "La transición sale bien. Los reclutadores pueden saber qué esperar del desempeño de la nueva directora en base al análisis de sus capacidades.",
           "value": 4,
           "risk": 55,
           "stability": 50,
@@ -350,7 +350,7 @@
         },
         {
           "type": "manual",
-          "label": "Usar el módulo básico de Sucesión para recomendar 3 personas",
+          "label": "Abrir el puesto con el módulo básico de Sucesión",
           "bullets": [
             "Se usa la funcionalidad básica del módulo de Sucesión y Desarrollo",
             "El sistema recomienda a 3 personas sin IA ni análisis profundo",
@@ -370,7 +370,7 @@
             "RH designa un director de prueba durante 4 meses",
             "El agente de IA monitorea su desempeño real y registra avances y dificultades"
           ],
-          "result": "Probar antes de decidir reduce el riesgo de elegir mal. Gracias a Joule y People Analytics conocemos el desempeño real del nuevo director.",
+          "result": "Probar antes de decidir reduce el riesgo de elegir mal. Gracias a Joule conocemos el desempeño y cómo está el nuevo director.",
           "value": 8,
           "risk": 100,
           "stability": 85,
@@ -382,32 +382,18 @@
       "id": "cap",
       "floorName": "Capacitación",
       "missionTitle": "Cada Marinero al Timón",
-      "brief": "OceanAI Inc desea que los empleados sean dueños de su capacitación. El reto: que cada tripulante encuentre lo que necesita sin perderse en el mar de opciones.",
+      "brief": "OceanAI Inc desea que los empleados sean dueños de su capacitación.",
       "jouleTip": "Recuerda que Joule tiene la capacidad de detectar las brechas de capacidades de cada empleado.",
       "options": [
         {
-          "type": "manual",
-          "label": "Partner presencial + managers de RH coordinan maestros",
-          "bullets": [
-            "OceanAI tiene un partner que ofrece maestros presenciales",
-            "Los empleados contactan a un manager de RH para solicitar cursos",
-            "El manager llama al maestro adecuado para los cursos más populares"
-          ],
-          "result": "Sobrecarga de trabajo para los managers de RH, contactar a los maestros toma mucho tiempo. Los cursos no siempre son personalizados para todos los empleados.",
-          "value": 1,
-          "risk": 20,
-          "stability": 20,
-          "resources": {}
-        },
-        {
           "type": "native",
-          "label": "Joule como asistente personal de capacitación para cada empleado",
+          "label": "Apoyo de IA a disposición de cada empleado",
           "bullets": [
             "OceanAI pone a disposición Joule, el asistente de IA de SAP",
-            "Cada empleado pregunta qué cursos son mejores según su rol y nivel",
-            "Joule detecta brechas y recomienda rutas personalizadas"
+            "Cada empleado puede preguntar qué cursos son los mejores según su rol y nivel actual",
+            "Joule detecta brechas de capacidades y recomienda rutas personalizadas"
           ],
-          "result": "Los empleados con poca experiencia digital aún no usan Joule al máximo, pero quienes lo usan avanzan rápido con rutas personalizadas.",
+          "result": "Los empleados con poca experiencia digital no usan Joule. No hay forma de saber quién avanza y quién no.",
           "value": 8,
           "risk": 100,
           "stability": 85,
@@ -417,15 +403,29 @@
           "type": "external",
           "label": "Biblioteca de E-learning con cursos predeterminados",
           "bullets": [
-            "OceanAI contrata una biblioteca de E-learning amplia",
-            "Cada empleado busca y escoge los cursos que le parecen mejor",
+            "OceanAI contrata una biblioteca de E-learning con cursos predeterminados",
+            "Cada empleado puede buscar y escoger los cursos que le parecen mejor",
             "Sin guía personalizada ni detección de brechas"
           ],
-          "result": "Los empleados no saben por dónde ir, pierden mucho tiempo buscando. Algunos no escogen las capacitaciones que mejor quedan con sus perfiles.",
+          "result": "Los empleados no saben por dónde ir, pierden mucho tiempo buscando y escogiendo qué hacer. Algunos no escogen las capacitaciones que mejor quedan con sus perfiles.",
           "value": 4,
           "risk": 55,
           "stability": 50,
           "resources": { "productivity": 3, "innovation": 1 }
+        },
+        {
+          "type": "manual",
+          "label": "Partner presencial + managers de RH coordinan maestros",
+          "bullets": [
+            "OceanAI tiene un partner que ofrece maestros presenciales para dar cursos",
+            "Los empleados contactan a un manager de RH para que llame al maestro adecuado",
+            "Los cursos más populares se imparten pero sin personalización"
+          ],
+          "result": "Sobrecarga de trabajo para los managers de RH, contactar a los maestros toma mucho tiempo. Los cursos seleccionados no siempre son buenos/personalizados para todos los empleados.",
+          "value": 1,
+          "risk": 20,
+          "stability": 20,
+          "resources": {}
         }
       ]
     }
