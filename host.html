@@ -14,31 +14,68 @@
 <div class="host-wrap">
 
   <!-- LOBBY -->
-  <div class="scr on" id="host-lobby">
-    <div class="host-title">HR AI Tower</div>
-    <div class="host-sub">Escanea el código QR o ingresa el link para unirte</div>
-    <div class="host-join-box">
-      <div id="qr-canvas-wrap"></div>
-      <div class="host-room-code">
-        <div class="hrc-lbl">Código de sala</div>
-        <div class="hrc-val" id="room-code-display">----</div>
+  <!-- Fondo: imagen Assets/host arena.png. Ya incluye el header SAP, el
+       título/castillo, el subtítulo, el letrero de madera y todas las
+       decoraciones de playa, así que en HTML sólo queda la card funcional. -->
+  <div class="scr host-lobby-screen on" id="host-lobby">
+
+    <div class="hl-card">
+
+      <div class="hl-section">
+        <div class="hl-lbl">Código de sala</div>
+        <div class="hl-code-row">
+          <div class="hl-code-box" id="room-code-display">----</div>
+          <button type="button" class="hl-copy-btn" id="btn-copy-code" onclick="copyRoomCode()" title="Copiar código">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="8" y="8" width="12" height="12" rx="2"/>
+              <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>
+            </svg>
+          </button>
+        </div>
+        <div class="hl-link-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 15l6-6"/>
+            <path d="M13 5.5l1.5-1.5a3.5 3.5 0 0 1 5 5L18 10.5"/>
+            <path d="M11 13.5L9.5 15a3.5 3.5 0 0 1-5-5L6 8.5"/>
+          </svg>
+          <span id="host-link-display"></span>
+        </div>
+        <div id="qr-canvas-wrap"></div>
       </div>
-      <div class="host-link" id="host-link-display"></div>
+
+      <div class="hl-divider"></div>
+
+      <div class="hl-section hl-players-section">
+        <div class="hl-players-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8.5" cy="8" r="3"/>
+            <circle cx="16" cy="9" r="2.4"/>
+            <path d="M2.5 19.5c0-3.4 2.7-5.7 6-5.7s6 2.3 6 5.7"/>
+            <path d="M13.2 14.3c.6-.16 1.2-.24 1.8-.24 2.7 0 5 1.9 5 5.4" opacity="0.85"/>
+          </svg>
+        </div>
+        <div class="hl-players-info">
+          <div class="hl-lbl">Jugadores conectados</div>
+          <div class="hl-players-count" id="player-count">0</div>
+        </div>
+      </div>
+      <div class="hl-players-grid" id="host-players-grid"></div>
+
+      <div class="hl-divider"></div>
+
+      <label class="hl-sound-toggle" for="sound-toggle-input">
+        <input type="checkbox" id="sound-toggle-input" onchange="HostApp.toggleSound(this.checked)">
+        <span class="hl-sound-track"><span class="hl-sound-thumb"></span></span>
+        <span class="hl-sound-lbl">Sonido activado</span>
+      </label>
+
+      <button class="hl-start-btn" id="btn-start-game" onclick="HostApp.openConfigScreen()" disabled>
+        Iniciar juego
+      </button>
+      <div class="hl-start-hint">Espera a que los jugadores se unan para comenzar</div>
+
     </div>
-    <div class="host-players-lbl">Jugadores conectados (<span id="player-count">0</span>)</div>
-    <div class="host-players-grid" id="host-players-grid"></div>
-    <div class="selected-missions-wrap" id="lobby-selected-wrap" style="display:none">
-      <div class="selected-missions-lbl">Misiones seleccionadas:</div>
-      <div class="selected-missions-list" id="lobby-selected-list"></div>
-    </div>
-    <label class="sound-toggle" for="sound-toggle-input">
-      <input type="checkbox" id="sound-toggle-input" onchange="HostApp.toggleSound(this.checked)">
-      <span class="sound-toggle-track"><span class="sound-toggle-thumb"></span></span>
-      <span class="sound-toggle-label">Sonido activado</span>
-    </label>
-    <button class="btn-go" id="btn-start-game" onclick="HostApp.openConfigScreen()" disabled>
-      Iniciar juego
-    </button>
+
   </div>
 
   <!-- CONFIGURACIÓN DE PARTIDA -->
@@ -200,5 +237,19 @@
 <script src="js/firebase-config.js"></script>
 <script src="js/multiplayer.js"></script>
 <script src="js/host-app.js"></script>
+<script>
+  // Solo UI decorativa del lobby: copiar código al portapapeles.
+  // No toca HostApp ni ninguna lógica de juego existente.
+  function copyRoomCode() {
+    const code = document.getElementById("room-code-display").textContent.trim();
+    if (!code || code === "----") return;
+    navigator.clipboard.writeText(code).then(() => {
+      const btn = document.getElementById("btn-copy-code");
+      if (!btn) return;
+      btn.classList.add("copied");
+      setTimeout(() => btn.classList.remove("copied"), 2000);
+    }).catch(() => {});
+  }
+</script>
 </body>
 </html>

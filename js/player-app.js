@@ -29,6 +29,10 @@
     let missionTimedOut = false;
     let timerPausedForTutorial = false; // NEW: flag to delay timer until tutorial dismissed
 
+    // ---------- Secuencia final: La Gran Ola ----------
+    let waveActive = false;
+    let waveTimeouts = [];
+
     async function init() {
       gameData = await GameEngine.loadData();
 
@@ -125,7 +129,7 @@
       const errEl = document.getElementById("join-error");
       if (!code) { errEl.textContent = "Ingresa un código."; return; }
       errEl.textContent = "";
-      goScreen("scr-intro");
+      goScreen("scr-instructions");
     }
 
     function isValidEmail(email) {
@@ -200,9 +204,9 @@
           }
 
         } else if (room.status === "results") {
-          goScreen("scr-res");
           renderResults();
           handleRoomTimer(null);
+          playWaveSequence();
         }
       });
     }
@@ -597,17 +601,25 @@
 
       const choices = state.choices;
       const missions = gameData.missions;
-      let towerH = '<div style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px">';
+
+      // Decisiones nativas (para el diploma de resultados)
+      const nativeCountEl = document.getElementById("res-native-count");
+      if (nativeCountEl) {
+        const nativeCount = Object.values(choices).filter((ch) => ch.type === "native").length;
+        nativeCountEl.textContent = nativeCount;
+      }
+
+      let towerH = '<div style="display:flex;flex-direction:column;gap:6px;width:100%;max-width:340px;margin:0 auto">';
       missions.forEach((m) => {
         const ch = choices[m.id];
         if (!ch) return;
         const color = ch.type === "native" ? "#0070F2" : ch.type === "external" ? "#7C4DFF" : ch.type === "timeout" ? "#D32F2F" : "#8891A6";
         const glyph = ch.type === "native" ? "\u25B2" : ch.type === "external" ? "\u25C6" : ch.type === "timeout" ? "\u2715" : "\u25A0";
         const grainsText = ch.grainsEarned >= 0 ? `+${ch.grainsEarned}` : `${ch.grainsEarned}`;
-        towerH += `<div style="background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 14px;border-left:3px solid ${color}">
-          <div style="font-size:12px;color:rgba(255,255,255,0.55)">${m.missionTitle}</div>
-          <div style="font-size:13px;font-weight:700;color:#fff;margin-top:2px">${glyph} ${ch.label || ""}</div>
-          <div style="font-size:11px;color:rgba(232,184,75,0.8);margin-top:2px">${grainsText} granos</div>
+        towerH += `<div style="background:rgba(245,230,200,0.6);border-radius:8px;padding:10px 14px;border-left:3px solid ${color}">
+          <div style="font-size:12px;color:#6B7280">${m.missionTitle}</div>
+          <div style="font-size:13px;font-weight:700;color:#0A1628;margin-top:2px">${glyph} ${ch.label || ""}</div>
+          <div style="font-size:11px;color:#B8860B;margin-top:2px">${grainsText} granos</div>
         </div>`;
       });
       towerH += "</div>";
@@ -664,7 +676,77 @@
       document.getElementById(id).classList.add("on");
     }
 
-    return { init, checkRoom, joinGame, selectCard, confirm, dismissTutorial, useJoule };
+    // ---------- Secuencia final: La Gran Ola ----------
+    function clearWaveTimeouts() {
+      waveTimeouts.forEach((t) => clearTimeout(t));
+      waveTimeouts = [];
+    }
+
+    function playWaveSequence() {
+      if (waveActive) return;
+      waveActive = true;
+      goScreen("scr-wave");
+
+      const scrWave = document.getElementById("scr-wave");
+      const text1 = document.getElementById("wave-text-1");
+      const text2 = document.getElementById("wave-text-2");
+      const glow = document.getElementById("wave-golden-glow");
+
+      const schedule = (fn, delay) => waveTimeouts.push(setTimeout(fn, delay));
+
+      text1.classList.add("wave-text-show");
+
+      schedule(() => {
+        text1.classList.remove("wave-text-show");
+        text2.classList.add("wave-text-show");
+      }, 2000);
+
+      schedule(() => {
+        text2.classList.remove("wave-text-show");
+        scrWave.classList.add("wave-rising");
+      }, 3500);
+
+      schedule(() => {
+        scrWave.classList.add("scr-wave-shake");
+        schedule(() => scrWave.classList.remove("scr-wave-shake"), 400);
+      }, 6500);
+
+      schedule(() => {
+        scrWave.classList.remove("wave-rising");
+        scrWave.classList.add("wave-falling");
+      }, 7500);
+
+      schedule(() => {
+        glow.classList.add("wave-glow-pulse");
+      }, 10000);
+
+      schedule(() => {
+        scrWave.classList.add("wave-fadeout");
+        schedule(() => finishWave(), 600);
+      }, 12500);
+    }
+
+    function finishWave() {
+      clearWaveTimeouts();
+      waveActive = false;
+      const scrWave = document.getElementById("scr-wave");
+      scrWave.classList.remove("wave-rising", "wave-falling", "scr-wave-shake", "wave-fadeout");
+      document.getElementById("wave-text-1").classList.remove("wave-text-show");
+      document.getElementById("wave-text-2").classList.remove("wave-text-show");
+      document.getElementById("wave-golden-glow").classList.remove("wave-glow-pulse");
+      goScreen("scr-res");
+    }
+
+    function skipWave() {
+      finishWave();
+    }
+
+    // ---------- Instrucciones (pantalla previa a scr-join) ----------
+    function dismissInstructions() {
+      goScreen("scr-intro");
+    }
+
+    return { init, checkRoom, joinGame, selectCard, confirm, dismissTutorial, useJoule, skipWave, dismissInstructions };
   })();
 
   document.addEventListener("DOMContentLoaded", () => PlayerApp.init());

@@ -13,198 +13,55 @@
 
 <div class="game-wrap" id="gw">
 
+  <!-- PASO 0: instrucciones del juego (solo si no viene ?room= en el link) -->
+  <div class="scr instructions-screen" id="scr-instructions">
+    <div class="instructions-card">
+      <div class="instructions-ttl">HR AI Tower</div>
+      <div class="instructions-sub">Conoce el juego antes de empezar</div>
+
+      <div style="position:relative;overflow:hidden;padding-top:56.25%;border-radius:12px;">
+        <iframe
+          src="https://share.synthesia.io/embeds/videos/5d29123b-3242-4d2e-bf9c-1cc0b243a138"
+          loading="lazy"
+          title="Synthesia video player - OceanAI inc (intro juego)"
+          allowfullscreen
+          allow="encrypted-media; fullscreen; microphone;"
+          style="position:absolute;width:100%;height:100%;top:0;left:0;border:none;padding:0;margin:0;overflow:hidden;">
+        </iframe>
+      </div>
+
+      <button class="instructions-btn" onclick="PlayerApp.dismissInstructions()">Armar mi torre</button>
+    </div>
+  </div>
+
   <!-- PASO 1: ingresar código de sala (si no viene en el link) -->
-  <div class="scr join-screen on" id="scr-join">
+  <div class="scr beach-screen on" id="scr-join">
 
-    <div class="join-bg" aria-hidden="true">
-      <svg class="join-bg-hex" viewBox="0 0 300 260" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <pattern id="joinHexGrid" width="52" height="90" patternUnits="userSpaceOnUse">
-            <polygon points="26,0 52,15 52,45 26,60 0,45 0,15" fill="none" stroke="#2E8CFF" stroke-width="1"/>
-            <polygon points="0,45 26,60 26,90 0,105 -26,90 -26,60" fill="none" stroke="#2E8CFF" stroke-width="1"/>
-            <polygon points="52,45 78,60 78,90 52,105 26,90 26,60" fill="none" stroke="#2E8CFF" stroke-width="1"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#joinHexGrid)"/>
-      </svg>
-      <div class="join-bg-lines"></div>
-      <div class="join-bg-glow"></div>
-      <div class="join-bg-skyline"></div>
+    <div class="beach-card">
+      <div class="beach-card-ttl">Ingresa el código de la sala</div>
+      <div class="beach-card-sub">Únete a tu tripulación y comienza el desafío</div>
+
+      <input type="text" id="input-room-code" placeholder="Ej: HR2024" maxlength="5" class="beach-input" autocomplete="off">
+
+      <div id="join-error" class="beach-error-msg"></div>
+
+      <button class="beach-btn" onclick="PlayerApp.checkRoom()">
+        Unirse al juego <span class="beach-btn-arrow">&rsaquo;</span>
+      </button>
     </div>
 
-    <div class="join-main">
-
-      <header class="join-topbar">
-        <div class="join-sap-badge">
-          <span class="join-sap-pill">SAP</span>
-          <span class="join-sap-tag">The Best Run SAP</span>
-        </div>
-        <div class="join-topbar-right">
-          <svg class="join-globe-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="9"/>
-            <ellipse cx="12" cy="12" rx="4" ry="9"/>
-            <path d="M3 12h18"/>
-          </svg>
-          <span class="join-e-letter">E</span>
-        </div>
-      </header>
-
-      <div class="join-hero">
-        <div class="join-shield">
-          <svg viewBox="0 0 100 116" fill="none">
-            <polygon points="50,4 92,26 92,76 50,113 8,76 8,26" fill="rgba(0,112,242,0.16)" stroke="#2E8CFF" stroke-width="2.5"/>
-            <g transform="translate(29,36) scale(1.85)" stroke="#2E8CFF" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v3"/>
-              <path d="M12 5l5 2v2H7V7l5-2z" fill="#2E8CFF" stroke="none"/>
-              <rect x="8" y="9" width="8" height="10" rx="1"/>
-              <path d="M8 13h8M8 16h8"/>
-              <path d="M6 19h12"/>
-            </g>
-          </svg>
-        </div>
-        <h1 class="join-title">HR <span class="join-title-ai">AI</span> Tower</h1>
-        <p class="join-subtitle">Construye tu torre de arena. Navega con OceanAI Inc.</p>
-      </div>
-
-      <div class="join-content">
-
-        <div class="join-card">
-          <div class="join-card-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="8.5" cy="8" r="3"/>
-              <circle cx="16" cy="9" r="2.4"/>
-              <path d="M2.5 19.5c0-3.4 2.7-5.7 6-5.7s6 2.3 6 5.7"/>
-              <path d="M13.2 14.3c.6-.16 1.2-.24 1.8-.24 2.7 0 5 1.9 5 5.4" opacity="0.85"/>
-            </svg>
-          </div>
-          <div class="join-card-ttl">Ingresa el código de la sala</div>
-          <div class="join-card-sub">Únete a tu tripulación y comienza el desafío</div>
-
-          <div class="join-input-wrap">
-            <span class="join-input-hash">#</span>
-            <input type="text" id="input-room-code" placeholder="Ej: HR2024" maxlength="5" class="join-input" autocomplete="off">
-          </div>
-
-          <div id="join-error" class="join-error-msg"></div>
-
-          <button class="join-btn" onclick="PlayerApp.checkRoom()">
-            Unirse al juego <span class="join-btn-arrow">&rsaquo;</span>
-          </button>
-
-          <div class="join-divider"><span>o</span></div>
-
-          <button type="button" class="join-qr-link">
-            <svg viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <rect x="14" y="3" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <rect x="3" y="14" width="7" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/>
-              <rect x="5.5" y="5.5" width="2" height="2" fill="currentColor"/>
-              <rect x="16.5" y="5.5" width="2" height="2" fill="currentColor"/>
-              <rect x="5.5" y="16.5" width="2" height="2" fill="currentColor"/>
-              <rect x="14" y="14" width="2.2" height="2.2" fill="currentColor"/>
-              <rect x="18" y="14" width="2.2" height="2.2" fill="currentColor"/>
-              <rect x="14" y="18" width="2.2" height="2.2" fill="currentColor"/>
-              <rect x="18" y="18" width="2.2" height="2.2" fill="currentColor"/>
-            </svg>
-            Escanear código QR
-          </button>
-        </div>
-
-        <div class="join-tower-wrap" aria-hidden="true">
-          <div class="join-tower">
-            <div class="join-tower-flagpole"><span class="join-tower-flag"></span></div>
-            <div class="join-tower-floors">
-              <div class="join-tower-floor jtf-5">
-                <span class="join-tower-hex">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 3l2.6 5.6 6.1.6-4.6 4.1 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.6-4.1 6.1-.6z"/>
-                  </svg>
-                </span>
-              </div>
-              <div class="join-tower-floor jtf-4">
-                <span class="join-tower-hex">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="8" r="3"/>
-                    <path d="M2.5 20c0-3.4 2.8-5.8 6.5-5.8s6.5 2.4 6.5 5.8"/>
-                    <circle cx="17" cy="9" r="2.3"/>
-                  </svg>
-                </span>
-              </div>
-              <div class="join-tower-floor jtf-3">
-                <span class="join-tower-hex">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect x="4" y="12" width="3" height="8" fill="#fff"/>
-                    <rect x="10.5" y="7" width="3" height="13" fill="#fff"/>
-                    <rect x="17" y="3" width="3" height="17" fill="#fff"/>
-                  </svg>
-                </span>
-              </div>
-              <div class="join-tower-floor jtf-2">
-                <span class="join-tower-hex">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="3"/>
-                    <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/>
-                  </svg>
-                </span>
-              </div>
-              <div class="join-tower-floor jtf-1">
-                <span class="join-tower-hex">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2l7 3v6c0 5-3 8-7 9-4-1-7-4-7-9V5l7-3z"/>
-                    <text x="12" y="15.5" font-size="7.5" font-weight="800" text-anchor="middle" fill="#fff" stroke="none">$</text>
-                  </svg>
-                </span>
-              </div>
-            </div>
-            <div class="join-tower-base"></div>
-          </div>
-        </div>
-
-      </div>
-
-      <div class="join-footer">
-        <div class="join-footer-col">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2E8CFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="7" width="18" height="12" rx="2"/>
-            <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-            <path d="M3 12h18"/>
-          </svg>
-          <div class="join-footer-ttl">Casos reales de negocio</div>
-          <div class="join-footer-sub">Toma decisiones estratégicas</div>
-        </div>
-        <div class="join-footer-col">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2E8CFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="6" y="6" width="12" height="12" rx="2"/>
-            <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>
-            <circle cx="12" cy="12" r="2.2"/>
-          </svg>
-          <div class="join-footer-ttl">Potenciado por IA</div>
-          <div class="join-footer-sub">Insights que transforman</div>
-        </div>
-        <div class="join-footer-col">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#2E8CFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/>
-            <path d="M8 5H5a3 3 0 0 0 3 5"/>
-            <path d="M16 5h3a3 3 0 0 1-3 5"/>
-            <path d="M12 12v4"/>
-            <path d="M9 20h6"/>
-          </svg>
-          <div class="join-footer-ttl">Compite con tu equipo</div>
-          <div class="join-footer-sub">Lidera el ranking</div>
-        </div>
-      </div>
-
-    </div>
   </div>
 
   <!-- PASO 2: nombre -->
   <div class="scr intro-bg" id="scr-intro">
-    <div class="game-title">HR AI Tower</div>
-    <div class="game-sub">Construye tu torre de arena con SAP Business AI en SuccessFactors</div>
-    <input type="text" id="input-player-name" placeholder="Tu nombre" maxlength="20" class="input-field">
-    <input type="email" id="input-player-email" placeholder="Correo corporativo" class="input-field">
-    <input type="text" id="input-player-company" placeholder="Empresa" maxlength="40" class="input-field">
-    <button class="btn-go" id="btn-go" onclick="PlayerApp.joinGame()" disabled>Unirme a la partida</button>
+    <div class="intro-card">
+      <div class="game-title">HR AI Tower</div>
+      <div class="game-sub">Construye tu torre de arena con SAP Business AI en SuccessFactors</div>
+      <input type="text" id="input-player-name" placeholder="Tu nombre" maxlength="20" class="input-field">
+      <input type="email" id="input-player-email" placeholder="Correo corporativo" class="input-field">
+      <input type="text" id="input-player-company" placeholder="Empresa" maxlength="40" class="input-field">
+      <button class="btn-go" id="btn-go" onclick="PlayerApp.joinGame()" disabled>Unirme a la partida</button>
+    </div>
   </div>
 
   <!-- PASO 3: esperando que el host inicie -->
@@ -212,6 +69,18 @@
     <div class="game-title">&iexcl;Listo!</div>
     <div class="game-sub">Esperando a que el anfitrión inicie el juego&hellip;</div>
     <div class="loader"></div>
+    <svg class="wait-castle" viewBox="0 0 64 48" width="64" height="48" fill="none">
+      <rect x="6" y="26" width="52" height="18" rx="2" fill="#E8C547"/>
+      <rect x="10" y="14" width="10" height="14" fill="#F4D03F"/>
+      <rect x="27" y="8" width="10" height="20" fill="#F4D03F"/>
+      <rect x="44" y="14" width="10" height="14" fill="#F4D03F"/>
+      <polygon points="15,14 10,6 20,6" fill="#D4A853"/>
+      <polygon points="32,8 27,0 37,0" fill="#D4A853"/>
+      <polygon points="49,14 44,6 54,6" fill="#D4A853"/>
+      <rect x="29" y="34" width="6" height="10" rx="3" fill="#8B5E3C"/>
+      <circle cx="30" cy="18" r="1.2" fill="#0A1628"/>
+      <circle cx="34" cy="18" r="1.2" fill="#0A1628"/>
+    </svg>
     <div class="selected-missions-wrap" id="wait-selected-wrap" style="display:none">
       <div class="selected-missions-lbl">Misiones seleccionadas:</div>
       <div class="selected-missions-list" id="wait-selected-list"></div>
@@ -566,30 +435,83 @@
     </div>
   </div>
 
-  <!-- RESULTADOS PERSONALES -->
-  <div class="scr res-bg" id="scr-res">
-    <!-- Posición y título -->
-    <div class="res-rank-hero">
-      <div class="res-position" id="res-position">1° de 1</div>
-      <div class="res-rank-title" id="res-rank-title">Capitán Al Mando</div>
-      <div class="res-rank-desc" id="res-rank-desc">Eres el comandante y máxima autoridad a bordo.</div>
+  <!-- SECUENCIA FINAL: LA GRAN OLA (se activa desde player-app.js al terminar el juego, antes de scr-res) -->
+  <div class="scr wave-screen" id="scr-wave">
+    <button type="button" class="wave-skip-btn" onclick="PlayerApp.skipWave()">Saltar</button>
+
+    <div class="wave-text wave-text-1" id="wave-text-1">Toda construcción enfrenta una última prueba&hellip;</div>
+    <div class="wave-text wave-text-2" id="wave-text-2">Se aproxima una gran ola.</div>
+
+    <div class="wave-element wave-layer-3"></div>
+    <div class="wave-element wave-layer-2"></div>
+    <div class="wave-element wave-layer-1">
+      <div class="wave-foam"></div>
     </div>
 
-    <div class="res-grains-wrap">
-      <svg class="res-grains-icon" viewBox="0 0 24 24" width="32" height="32" fill="none">
-        <circle cx="12" cy="16" r="2.5" fill="#E8B84B"/>
-        <circle cx="7" cy="13" r="2" fill="#E8B84B" opacity="0.7"/>
-        <circle cx="17" cy="12" r="2.2" fill="#E8B84B" opacity="0.8"/>
-        <circle cx="10" cy="9" r="1.5" fill="#E8B84B" opacity="0.5"/>
-        <circle cx="15" cy="7" r="1.2" fill="#E8B84B" opacity="0.4"/>
-      </svg>
-      <div class="res-grains-num" id="res-grains-num">0</div>
-      <div class="res-grains-lbl">Granos de Arena</div>
+    <div class="wave-golden-glow" id="wave-golden-glow"></div>
+  </div>
+
+  <!-- RESULTADOS PERSONALES -->
+  <div class="scr res-bg" id="scr-res">
+    <div class="res-card">
+
+      <div class="res-diploma-header">
+        <svg class="res-diploma-castle" viewBox="0 0 64 56" width="56" height="56" fill="none">
+          <rect x="6" y="30" width="52" height="20" rx="2" fill="#E8B84B"/>
+          <rect x="10" y="16" width="10" height="16" fill="#F0C868"/>
+          <rect x="27" y="10" width="10" height="22" fill="#F0C868"/>
+          <rect x="44" y="16" width="10" height="16" fill="#F0C868"/>
+          <polygon points="15,16 10,8 20,8" fill="#D4A853"/>
+          <polygon points="32,10 27,2 37,2" fill="#D4A853"/>
+          <polygon points="49,16 44,8 54,8" fill="#D4A853"/>
+          <rect x="29" y="38" width="6" height="12" rx="3" fill="#8B5E3C"/>
+        </svg>
+        <div class="res-diploma-title">Misión Completada</div>
+        <div class="res-diploma-subtitle">Tu torre resistió la Gran Ola.</div>
+      </div>
+
+      <div class="res-diploma-divider"></div>
+
+      <p class="res-diploma-desc">Has guiado a tu tripulación, tomaste decisiones estratégicas y construiste una torre capaz de superar la prueba final.</p>
+
+      <div class="res-diploma-stats">
+        <div class="res-diploma-stat">
+          <svg class="res-diploma-stat-icon" viewBox="0 0 24 24" width="20" height="20" fill="#E8B84B"><path d="M12 2l2.9 6.6L22 9.3l-5 4.9 1.2 7.1L12 17.8 5.8 21.3 7 14.2 2 9.3l7.1-.7z"/></svg>
+          <div class="res-diploma-stat-num res-diploma-stat-gold" id="res-grains-num">0</div>
+          <div class="res-diploma-stat-lbl">Granos de arena</div>
+        </div>
+        <div class="res-diploma-stat">
+          <div class="res-diploma-stat-num res-diploma-stat-blue" id="res-ico">0</div>
+          <div class="res-diploma-stat-lbl" id="res-status">Estado ICO</div>
+        </div>
+        <div class="res-diploma-stat">
+          <div class="res-diploma-stat-num res-diploma-stat-green" id="res-native-count">0</div>
+          <div class="res-diploma-stat-lbl">Decisiones nativas</div>
+        </div>
+        <div class="res-diploma-stat">
+          <svg class="res-diploma-stat-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#0A1628" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg>
+          <div class="res-diploma-stat-txt">Resistió la Gran Ola</div>
+          <div class="res-diploma-stat-lbl">Fortaleza de la torre</div>
+        </div>
+      </div>
+
+      <div class="res-learn" id="res-learn"></div>
+
+      <div class="res-diploma-badges-section">
+        <div class="res-diploma-badges-lbl">Insignias desbloqueadas</div>
+        <div class="res-badges" id="res-badges"></div>
+      </div>
+
+      <div class="res-diploma-divider"></div>
+
+      <p class="res-diploma-quote">Las mejores torres no son las más altas, sino las que resisten cualquier desafío.</p>
+
+      <div class="res-diploma-actions">
+        <button type="button" class="res-diploma-btn res-diploma-btn-primary" onclick="location.reload()">Jugar nuevamente</button>
+        <button type="button" class="res-diploma-btn res-diploma-btn-secondary" onclick="location.href='play.html'">Volver al inicio</button>
+      </div>
+
     </div>
-    <div class="res-ico" id="res-ico">0</div>
-    <div class="res-status" id="res-status"></div>
-    <div class="res-learn" id="res-learn"></div>
-    <div class="res-badges" id="res-badges"></div>
   </div>
 
   <div id="toast-area"></div>
