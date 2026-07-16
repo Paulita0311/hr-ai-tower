@@ -185,22 +185,11 @@
             hasAnsweredThisMission = false;
           }
 
-          // If tutorial is showing, pause/hide the timer — don't tick until dismissed
-          if (!tutorialDismissed && currentMissionIdx === 0) {
-            timerPausedForTutorial = true;
-            // Store timer state but don't start visual countdown yet
-            currentTimerState = room.timer || null;
-            pendingFirstMission = true;
-            goScreen("scr-tutorial");
-          } else {
-            // Timer can run freely
-            timerPausedForTutorial = false;
-            handleRoomTimer(room.timer);
+          handleRoomTimer(room.timer);
 
-            if (!hasAnsweredThisMission) {
-              goScreen("scr-game");
-              renderMission(currentMissionIdx);
-            }
+          if (!hasAnsweredThisMission) {
+            goScreen("scr-game");
+            renderMission(currentMissionIdx);
           }
 
         } else if (room.status === "results") {

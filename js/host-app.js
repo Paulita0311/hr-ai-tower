@@ -22,19 +22,7 @@
       const joinLink = Multiplayer.getJoinLink();
       document.getElementById("host-link-display").textContent = joinLink;
 
-      renderQR(joinLink);
       listenPlayers();
-    }
-
-    function renderQR(link) {
-      const wrap = document.getElementById("qr-canvas-wrap");
-      if (typeof QRCode === "undefined") {
-        wrap.innerHTML = '<div style="color:rgba(255,255,255,0.4);font-size:11px;padding:12px;text-align:center">QR no disponible<br>Comparte el link</div>';
-        return;
-      }
-      QRCode.toCanvas(link, { width: 180, margin: 1 }, (err, canvas) => {
-        if (!err) wrap.appendChild(canvas);
-      });
     }
 
     function listenPlayers() {
